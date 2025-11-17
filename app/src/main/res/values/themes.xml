@@ -2,4 +2,14 @@
 <resources>
 
     <style name="Theme.FotApp" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.FotApp.Splash" parent="Theme.SplashScreen">
+        <!-- Fondo del splash -->
+        <item name="windowSplashScreenBackground">@color/splash_bg</item>
+
+        <!-- Tu logo (VectorDrawable) -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_futconnect</item>
+
+        <!-- Tema normal de la app -->
+        <item name="postSplashScreenTheme">@style/Theme.FotApp</item>
+    </style>
 </resources>

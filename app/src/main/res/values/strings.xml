@@ -1,3 +1,59 @@
 <resources>
-    <string name="app_name">FotApp</string>
+    <string name="app_name">FutConnect</string>
+    
+    <!-- Strings para componentes -->
+    <string name="default_content_descrip">Image content</string>
+    <string name="avatar_desc">User avatar</string>
+    <string name="favorite_desc">Add to favorites</string>
+    <string name="remove_favorite_desc">Remove from favorites</string>
+    <string name="goals_template">⚽ %d goles</string>
+    <string name="assists_template">🎯 %d asistencias</string>
+    <string name="age_template">%d años</string>
+    
+    <!-- Títulos de pantallas -->
+    <string name="players_list">Jugadores</string>
+    <string name="favorites_list">Favoritos</string>
+    <string name="profile">Perfil</string>
+    <string name="about">Acerca de</string>
+    
+    <!-- Estadísticas -->
+    <string name="goals">Goles</string>
+    <string name="assists">Asistencias</string>
+    <string name="age">Edad</string>
+    <string name="position">Posición</string>
+    <string name="team">Equipo</string>
+    <string name="nationality">Nacionalidad</string>
+    
+    <!-- Botones -->
+    <string name="login">Iniciar Sesión</string>
+    <string name="logout">Cerrar Sesión</string>
+    <string name="back">Volver</string>
+    <string name="add_comment">Añadir Comentario</string>
+    
+    <!-- Mensajes -->
+    <string name="player_not_found">Jugador no encontrado</string>
+    <string name="no_favorites">No tienes jugadores favoritos</string>
+    <string name="add_to_favorites">Añadir a favoritos</string>
+    <string name="remove_from_favorites">Eliminar de favoritos</string>
+    
+    <!-- Placeholders -->
+    <string name="profile_name">Nombre de perfil</string>
+    <string name="comment_hint">Escribe tu comentario aquí...</string>
+    <string name="rating_hint">Puntuación</string>
+    <string name="search_players">Buscar jugadores...</string>
+    <string name="player_image_desc">Descripcion del jugador</string>
+
+    <string name="player_detail">Detalle del jugador</string>
+    <string name="about_app">Acerca de la app</string>
+    <string name="features">Características</string>
+    <string name="contact_team">Contactar al equipo</string>
+    <string name="comments">Comentarios</string>
+    <string name="about_player">Sobre el jugador</string>
+    <string name="statistics">Estadísticas</string>
+    <string name="personal_info">Información personal</string>
+    <string name="my_stats">Mis estadísticas</string>
+    <string name="achievements">Logros</string>
+    <string name="activity">Actividad</string>
+    <string name="no_comments">No hay comentarios todavía</string>
+    <string name="be_first">¡Sé el primero!</string>
 </resources>
