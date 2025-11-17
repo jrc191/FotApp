@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -56,11 +57,11 @@ fun AboutScreen(onSendEmail: () -> Unit) {
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_soccer),
-                contentDescription = "Logo FutConnect",
+                contentDescription = "Logo "+ stringResource(R.string.app_name),
                 modifier = Modifier.size(120.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Text("FutConnect", fontSize = 32.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.app_name), fontSize = 32.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
             Text("Red social para amantes del fútbol", fontSize = 18.sp)
             Spacer(modifier = Modifier.height(16.dp))
