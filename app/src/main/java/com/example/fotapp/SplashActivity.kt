@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import com.example.fotapp.ui.theme.FotAppTheme
@@ -95,6 +96,19 @@ fun SplashScreen(onTimeout: () -> Unit) {
                     modifier = Modifier.graphicsLayer {
                         this.alpha = alpha.value
                     }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = stringResource(R.string.splash_tagline),
+                    style = MaterialTheme.typography.headlineMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .graphicsLayer {
+                            this.alpha = alpha.value
+                        }
+                        .padding(10.dp)
                 )
             }
         }

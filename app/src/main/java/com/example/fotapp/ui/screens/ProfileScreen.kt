@@ -23,7 +23,7 @@ import com.example.fotapp.ui.components.StatCard
 @Composable
 fun ProfileCompactScreen(
     modifier: Modifier = Modifier,
-    favCount: Int, // <--- NUEVO PARÁMETRO: Recibe el número de favoritos
+    favCount: Int,
     onAboutClick: () -> Unit = {}
 ) {
     var profileName by remember { mutableStateOf("JoseRC") }
@@ -36,11 +36,11 @@ fun ProfileCompactScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(bottom = 80.dp)
+            .padding(bottom = 0.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // ... (Cabecera y Avatar igual que antes) ...
+        // Encabezado del perfil
         Surface(
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colorScheme.primaryContainer
@@ -112,9 +112,7 @@ fun ProfileCompactScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // USAMOS LA VARIABLE favCount AQUÍ
                 StatCard("Favoritos", "$favCount", Icons.Default.Favorite, Modifier.weight(1f))
-
                 StatCard("Comentarios", "47", Icons.AutoMirrored.Filled.Comment, Modifier.weight(1f))
                 StatCard("Días activo", "128", Icons.Default.CalendarToday, Modifier.weight(1f))
             }
@@ -165,7 +163,7 @@ fun ProfileMedExpScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(28.dp)
+                .padding(0.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             Row(
@@ -238,6 +236,7 @@ fun ProfileMedExpScreen(
                                 Spacer(Modifier.width(8.dp))
                                 Text(stringResource(R.string.about))
                             }
+
                         }
                     }
                 }
@@ -246,7 +245,7 @@ fun ProfileMedExpScreen(
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(32.dp),
+                        .padding(24.dp),
                     verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
                     Spacer(modifier = Modifier.weight(1f))
@@ -284,9 +283,7 @@ fun ProfileMedExpScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        // USAMOS LA VARIABLE favCount AQUÍ TAMBIÉN
                         StatCard("Favoritos", "$favCount", Icons.Default.Favorite, Modifier.weight(1f))
-
                         StatCard("Comentarios", "47", Icons.AutoMirrored.Filled.Comment, Modifier.weight(1f))
                         StatCard("Días", "28", Icons.Default.Star, Modifier.weight(1f))
                         StatCard("Amigos", "15", Icons.Default.People, Modifier.weight(1f))

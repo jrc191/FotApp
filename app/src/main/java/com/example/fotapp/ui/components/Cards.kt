@@ -20,7 +20,7 @@ import com.example.fotapp.R
 import com.example.fotapp.data.Datasource
 import com.example.fotapp.model.Player
 
-// Tarjeta de jugador
+// Tarjeta de jugador vertical
 @Composable
 fun PlayerCard(
     player: Player,
@@ -107,7 +107,7 @@ fun PlayerCard(
     }
 }
 
-// Tarjeta de jugador para pantallas medianas/expandidas (landscape)
+// Tarjeta de jugador horizontal
 @Composable
 fun PlayerCardLand(
     player: Player,
@@ -214,7 +214,7 @@ fun PlayerCardLand(
                 }
             }
             
-            // Descripción (solo visible en landscape)
+            // Descripción
             Spacer(modifier = Modifier.height(12.dp))
             FutTextComp(
                 text = player.description,
