@@ -16,7 +16,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// Colores personalizados (verde césped, blanco, negro)
 private val futbolLightColorScheme = lightColorScheme(
     primary = Color(0xFF2E7D32),      // Verde césped
     onPrimary = Color.White,
@@ -41,15 +40,15 @@ private val futbolLightColorScheme = lightColorScheme(
 )
 
 private val futbolDarkColorScheme = darkColorScheme(
-    primary = Color(0xFF81C784),      // Verde claro
+    primary = Color(0xFF81C784),
     onPrimary = Color.Black,
     primaryContainer = Color(0xFF2E7D32),
     onPrimaryContainer = Color.White,
-    secondary = Color(0xFFEF9A9A),    // Rojo claro
+    secondary = Color(0xFFEF9A9A),
     onSecondary = Color.Black,
     secondaryContainer = Color(0xFFB71C1C),
     onSecondaryContainer = Color.White,
-    tertiary = Color(0xFF90CAF9),     // Azul claro
+    tertiary = Color(0xFF90CAF9),
     onTertiary = Color.Black,
     tertiaryContainer = Color(0xFF0D47A1),
     onTertiaryContainer = Color.White,
@@ -63,7 +62,7 @@ private val futbolDarkColorScheme = darkColorScheme(
     outlineVariant = Color(0xFF404040)
 )
 
-// Colores extendidos personalizados para elementos específicos
+//A FUTURO
 object ExtendedColors {
     val fieldGreen = Color(0xFF2E7D32)
     val fieldLines = Color(0xFFFFFFFF)

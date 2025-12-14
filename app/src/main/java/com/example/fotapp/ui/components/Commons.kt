@@ -66,7 +66,7 @@ fun FutTextComp(
     )
 }
 
-// Componente de botón estándar
+// Componente de botón
 @Composable
 fun FutButtonComp(
     label: String,

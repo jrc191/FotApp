@@ -168,7 +168,6 @@ fun FutConnectApp() {
                         }
                     }
 
-                    // NUEVA RUTA: Detalle de favorito
                     composable("fav_detail/{player_id}") { backStackEntry ->
                         val playerId = backStackEntry.arguments?.getString("player_id")?.toIntOrNull() ?: 0
 
