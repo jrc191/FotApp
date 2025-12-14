@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// Colores personalizados inspirados en fútbol (verde césped, blanco, negro)
+// Colores personalizados (verde césped, blanco, negro)
 private val futbolLightColorScheme = lightColorScheme(
     primary = Color(0xFF2E7D32),      // Verde césped
     onPrimary = Color.White,

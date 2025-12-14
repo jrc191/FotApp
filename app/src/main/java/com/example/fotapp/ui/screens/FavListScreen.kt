@@ -32,7 +32,7 @@ fun FavListCompactScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         FutHeaderComp(title = stringResource(R.string.favorites_list))
-        
+
         if (favoritePlayers.isNotEmpty()) {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
@@ -43,7 +43,8 @@ fun FavListCompactScreen(
                     FavPlayerCard(
                         player = player,
                         onClick = {
-                            navController.navigate("player_detail/${player.id}")
+                            // CAMBIADO: usa fav_detail en lugar de player_detail
+                            navController.navigate("fav_detail/${player.id}")
                         },
                         onRemoveClick = { onRemoveFavorite(player) }
                     )
@@ -64,18 +65,18 @@ fun FavListCompactScreen(
                     modifier = Modifier.size(80.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                
+
                 Spacer(modifier = Modifier.height(24.dp))
-                
+
                 Text(
                     text = stringResource(R.string.no_favorites),
                     style = MaterialTheme.typography.headlineMedium,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 Text(
                     text = "Añade jugadores a favoritos tocando el icono ❤️ en la lista de jugadores",
                     style = MaterialTheme.typography.bodyMedium,
@@ -114,17 +115,17 @@ fun FavListMedExpScreen(
                     tint = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.size(32.dp)
                 )
-                
+
                 Spacer(modifier = Modifier.width(16.dp))
-                
+
                 Text(
                     text = stringResource(R.string.favorites_list),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.secondary
                 )
-                
+
                 Spacer(modifier = Modifier.width(16.dp))
-                
+
                 Text(
                     text = "(${favoritePlayers.size} jugadores)",
                     style = MaterialTheme.typography.titleMedium,
@@ -132,7 +133,7 @@ fun FavListMedExpScreen(
                 )
             }
         }
-        
+
         if (favoritePlayers.isNotEmpty()) {
             // Grid de favoritos para pantallas grandes
             LazyColumn(
@@ -178,9 +179,9 @@ fun FavListMedExpScreen(
                                                 )
                                             }
                                         }
-                                        
+
                                         Spacer(modifier = Modifier.width(16.dp))
-                                        
+
                                         Column(modifier = Modifier.weight(1f)) {
                                             Text(
                                                 text = player.name,
@@ -193,7 +194,7 @@ fun FavListMedExpScreen(
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         }
-                                        
+
                                         IconButton(
                                             onClick = { onRemoveFavorite(player) }
                                         ) {
@@ -204,9 +205,9 @@ fun FavListMedExpScreen(
                                             )
                                         }
                                     }
-                                    
+
                                     Spacer(modifier = Modifier.height(16.dp))
-                                    
+
                                     // Estadísticas
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
@@ -227,7 +228,7 @@ fun FavListMedExpScreen(
                                                 style = MaterialTheme.typography.labelSmall
                                             )
                                         }
-                                        
+
                                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                             Text(
                                                 text = "🎯",
@@ -243,7 +244,7 @@ fun FavListMedExpScreen(
                                                 style = MaterialTheme.typography.labelSmall
                                             )
                                         }
-                                        
+
                                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                             Text(
                                                 text = player.position.take(3),
@@ -259,12 +260,15 @@ fun FavListMedExpScreen(
                                             )
                                         }
                                     }
-                                    
+
                                     Spacer(modifier = Modifier.height(16.dp))
-                                    
+
                                     // Botón para ver detalles
                                     OutlinedButton(
-                                        onClick = { navController.navigate("player_detail/${player.id}") },
+                                        onClick = {
+                                            // CAMBIADO: usa fav_detail en lugar de player_detail
+                                            navController.navigate("fav_detail/${player.id}")
+                                        },
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
                                         Text(text = "Ver Detalles")
@@ -272,7 +276,7 @@ fun FavListMedExpScreen(
                                 }
                             }
                         }
-                        
+
                         // Si la fila tiene solo un jugador, añadimos un espacio vacío
                         if (rowPlayers.size == 1) {
                             Spacer(modifier = Modifier.weight(1f))
@@ -295,18 +299,18 @@ fun FavListMedExpScreen(
                     modifier = Modifier.size(100.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                
+
                 Spacer(modifier = Modifier.height(32.dp))
-                
+
                 Text(
                     text = "Tu lista de favoritos está vacía",
                     style = MaterialTheme.typography.headlineLarge,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 Text(
                     text = "Los jugadores que marques como favoritos aparecerán aquí para un acceso rápido",
                     style = MaterialTheme.typography.bodyLarge,

@@ -42,5 +42,4 @@ fun BottomNavigationBar(navController: NavController, currentRoute: String?) {
     }
 }
 
-//Data class que define los items anteriores.
 data class BottomNavItem(val route: String, val icon: ImageVector, val label: String)

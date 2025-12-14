@@ -56,4 +56,5 @@
     <string name="activity">Actividad</string>
     <string name="no_comments">No hay comentarios todavía</string>
     <string name="be_first">¡Sé el primero!</string>
+    <string name="favorite_detail">Detalles del favorito\n</string>
 </resources>

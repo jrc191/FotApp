@@ -2,7 +2,7 @@ package com.example.fotapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Paleta principal inspirada en fútbol
+// Paleta principal
 val fieldGreen = Color(0xFF2E7D32)
 val fieldLightGreen = Color(0xFFA5D6A7)
 val fieldDarkGreen = Color(0xFF1B5E20)
@@ -37,7 +37,7 @@ val gray700 = Color(0xFF616161)
 val gray800 = Color(0xFF424242)
 val gray900 = Color(0xFF212121)
 
-// Colores de equipos (ejemplos)
+// Colores de equipos
 val teamRed = Color(0xFFC62828)
 val teamBlue = Color(0xFF1565C0)
 val teamYellow = Color(0xFFF9A825)

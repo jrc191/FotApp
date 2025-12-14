@@ -147,7 +147,7 @@ fun ProfileCompactScreen(
 @Composable
 fun ProfileMedExpScreen(
     modifier: Modifier = Modifier,
-    favCount: Int, // <--- NUEVO PARÁMETRO TAMBIÉN AQUÍ
+    favCount: Int,
     onAboutClick: () -> Unit = {}
 ) {
     var profileName by remember { mutableStateOf("JoseRC") }
@@ -165,6 +165,7 @@ fun ProfileMedExpScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(28.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             Row(

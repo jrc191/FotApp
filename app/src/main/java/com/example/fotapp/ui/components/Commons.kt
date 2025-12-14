@@ -29,10 +29,7 @@ fun FutImageComp(
     height: Int = 0,
     width: Int = 0
 ) {
-    val contentDesc = if (contentDescription.isEmpty()) 
-        stringResource(R.string.default_content_descrip) 
-    else 
-        contentDescription
+    val contentDesc = contentDescription.ifEmpty { stringResource(R.string.default_content_descrip) }
     
     if (height != 0 && width != 0) {
         Image(
@@ -99,7 +96,7 @@ fun FutButtonComp(
     }
 }
 
-// Componente de cabecera con estilo de fútbol
+// Componente de cabecera
 @Composable
 fun FutHeaderComp(title: String) {
     Surface(
@@ -126,7 +123,7 @@ fun FutHeaderComp(title: String) {
     }
 }
 
-// Componente de tarjeta de estadística
+// Componente de tarjeta de estadísticas
 @Composable
 fun StatCard(
     title: String,

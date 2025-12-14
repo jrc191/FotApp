@@ -6,10 +6,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-// Fuentes seleccionadas para una app deportiva:
-// - Fuente sans-serif para legibilidad
-// - Peso bold para títulos (como nombres de jugadores)
-// - Altura de línea generosa para fácil lectura
+// Fuentes
 
 val FutAppTypography = Typography(
     displayLarge = TextStyle(

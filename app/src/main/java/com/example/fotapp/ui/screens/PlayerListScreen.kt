@@ -24,12 +24,9 @@ fun PlayerListCompactScreen(
     onFavoriteClick: (Player) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // SE HA ELIMINADO LA VARIABLE searchQuery Y LA LÓGICA filteredPlayers
 
     Column(modifier = modifier.fillMaxSize()) {
         FutHeaderComp(title = stringResource(R.string.players_list))
-
-        // SE HA ELIMINADO EL OutlinedTextField (BARRA DE BÚSQUEDA)
 
         // Lista de jugadores directa
         LazyColumn(
@@ -37,7 +34,6 @@ fun PlayerListCompactScreen(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             contentPadding = PaddingValues(vertical = 8.dp)
         ) {
-            // Usamos directamente 'players' sin filtrar
             items(players) { player ->
                 PlayerCard(
                     player = player,
@@ -59,10 +55,9 @@ fun PlayerListMedExpScreen(
     onFavoriteClick: (Player) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // SE HA ELIMINADO LA VARIABLE searchQuery Y LA LÓGICA filteredPlayers
 
     Column(modifier = modifier.fillMaxSize()) {
-        // Barra superior (ahora solo muestra el título)
+        // Barra superior
         Surface(
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colorScheme.surfaceVariant,
@@ -80,8 +75,6 @@ fun PlayerListMedExpScreen(
                     modifier = Modifier.weight(1f),
                     color = MaterialTheme.colorScheme.primary
                 )
-
-                // SE HA ELIMINADO EL OutlinedTextField QUE ESTABA AQUÍ
             }
         }
 

@@ -58,7 +58,7 @@ fun FutConnectApp() {
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStack?.destination?.route
 
-    //Tamaños de ventana
+    // Tamaños de ventana
     val windowSize = getWindowSizeClass(LocalContext.current as Activity)
 
     fun toggleFavorite(playerId: Int) {
@@ -75,8 +75,7 @@ fun FutConnectApp() {
 
     val favoritePlayers = players.filter { it.isFavorite }
 
-
-    //Splash Screen
+    // Splash Screen
     if (showSplash) {
         SplashScreen(onTimeout = {
             showSplash = false
@@ -136,10 +135,10 @@ fun FutConnectApp() {
                             navController = navController,
                             onFavoriteClick = { isFavorite ->
                                 if (playerId != 0) {
-                                    // Simplificado: llamamos a toggle directamente
                                     toggleFavorite(playerId)
                                 }
                             },
+                            isFromFavorites = false,
                             modifier = Modifier.fillMaxSize()
                         )
                     }
@@ -167,6 +166,22 @@ fun FutConnectApp() {
                                 )
                             }
                         }
+                    }
+
+                    // NUEVA RUTA: Detalle de favorito
+                    composable("fav_detail/{player_id}") { backStackEntry ->
+                        val playerId = backStackEntry.arguments?.getString("player_id")?.toIntOrNull() ?: 0
+
+                        PlayerDetailFavCompactScreen(
+                            playerId = playerId,
+                            navController = navController,
+                            onRemoveFavorite = {
+                                val player = favoritePlayers.find { it.id == playerId }
+                                player?.let { removeFavorite(it) }
+                                navController.navigateUp()
+                            },
+                            modifier = Modifier.fillMaxSize()
+                        )
                     }
 
                     composable("profile") {
