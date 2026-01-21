@@ -30,7 +30,7 @@ fun FutImageComp(
     width: Int = 0
 ) {
     val contentDesc = contentDescription.ifEmpty { stringResource(R.string.default_content_descrip) }
-    
+
     if (height != 0 && width != 0) {
         Image(
             painter = painterResource(id = drawable),
@@ -98,26 +98,21 @@ fun FutButtonComp(
 
 // Componente de cabecera
 @Composable
-fun FutHeaderComp(title: String) {
+fun FutHeaderComp(title: String, modifier: Modifier = Modifier) {
     Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        shape = MaterialTheme.shapes.medium,
+        modifier = modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.primary,
         shadowElevation = 4.dp
     ) {
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 12.dp, horizontal = 16.dp),
-            contentAlignment = Alignment.Center
+                .padding(horizontal = 24.dp, vertical = 20.dp),
         ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onPrimary,
-                fontWeight = FontWeight.Bold
+                color = MaterialTheme.colorScheme.onPrimary  // Usar color de contraste
             )
         }
     }
@@ -157,8 +152,7 @@ fun StatCard(
             )
             FutTextComp(
                 text = title,
-                style = MaterialTheme.typography.labelMedium,
-                //color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.labelMedium
             )
         }
     }
@@ -192,7 +186,7 @@ fun StarRating(
         for (i in 1..maxRating) {
             Icon(
                 imageVector = if (i <= rating) Icons.Filled.Star else Icons.Filled.StarBorder,
-                contentDescription = "Rating $i",
+                contentDescription = stringResource(R.string.rating_hint, i),
                 tint = if (i <= rating) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.outline,
                 modifier = Modifier.size(16.dp)
             )

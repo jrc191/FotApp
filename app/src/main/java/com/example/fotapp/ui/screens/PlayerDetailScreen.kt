@@ -8,12 +8,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -24,42 +22,77 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.fotapp.R
 import com.example.fotapp.data.Datasource
+import com.example.fotapp.data.Datasource.getFlagEmoji
 import com.example.fotapp.model.Comment
-import com.example.fotapp.model.Player
 import com.example.fotapp.ui.components.FutButtonComp
-import com.example.fotapp.ui.components.FutTextComp
 import com.example.fotapp.ui.components.StarRating
 import com.example.fotapp.ui.components.StatCard
 
-// Pantalla de detalle de jugador en formato compacto
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerDetailCompactScreen(
-    playerId: Int,
+    playerName: String,
     isFavoriteInitial: Boolean,
     navController: NavController,
     onFavoriteClick: (Boolean) -> Unit,
-    isFromFavorites: Boolean = false,
     modifier: Modifier = Modifier
 ) {
-    val player = Datasource.getPlayerById(playerId)
+    // Buscar por nombre
+    val player = remember(playerName) { Datasource.getPlayerByName(playerName) }
 
-    // Inicializamos el estado con el valor que viene de MainActivity
+    // Estado local para UI inmediata
     val isFavorite = remember { mutableStateOf(isFavoriteInitial) }
 
-    // Datos de prueba para comentarios
+    // Diálogo de confirmación (añadido para consistencia)
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    // Actualizar estado si cambia desde fuera
+    LaunchedEffect(isFavoriteInitial) {
+        isFavorite.value = isFavoriteInitial
+    }
+
+    // Datos dummy de comentarios
     val sampleComments = remember {
         listOf(
-            Comment(1, playerId, "Juan Pérez", "¡Excelente jugador! Siempre da lo mejor en el campo.", "2024-01-15", 5),
-            Comment(2, playerId, "Ana Gómez", "Me encanta verlo jugar. Técnica impresionante.", "2024-01-10", 4),
-            Comment(3, playerId, "Carlos Ruiz", "Un crack total. Merece todos los reconocimientos.", "2024-01-05", 5)
+            Comment(1, player?.id ?: 0, "Juan Pérez", "¡Excelente jugador!", "2024-01-15", 5),
+            Comment(2, player?.id ?: 0, "Ana Gómez", "Técnica impresionante.", "2024-01-10", 4),
+            Comment(3, player?.id ?: 0, "Carlos Ruiz", "Un crack total.", "2024-01-05", 5)
+        )
+    }
+
+    // Diálogo de confirmación para eliminar favorito
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text(stringResource(R.string.delete_dialog_title)) },
+            text = {
+                Text(
+                    stringResource(R.string.remove_favorite_confirm, player?.name ?: "")
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDeleteDialog = false
+                    onFavoriteClick(false)
+                }) {
+                    Text(
+                        stringResource(R.string.delete),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
         )
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { 
+                title = {
                     Text(
                         player?.name ?: stringResource(R.string.player_detail),
                         maxLines = 1,
@@ -69,7 +102,7 @@ fun PlayerDetailCompactScreen(
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back)
                         )
                     }
@@ -84,8 +117,13 @@ fun PlayerDetailCompactScreen(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {
-                    isFavorite.value = !isFavorite.value
-                    onFavoriteClick(isFavorite.value)
+                    if (isFavorite.value) {
+                        // Si ya es favorito, mostrar diálogo de confirmación
+                        showDeleteDialog = true
+                    } else {
+                        // Si no es favorito, añadir directamente
+                        onFavoriteClick(true)
+                    }
                 },
                 icon = {
                     Icon(
@@ -95,14 +133,14 @@ fun PlayerDetailCompactScreen(
                 },
                 text = {
                     Text(
-                        text = if (isFavorite.value) 
-                            stringResource(R.string.remove_from_favorites) 
-                        else 
+                        text = if (isFavorite.value)
+                            stringResource(R.string.remove_from_favorites)
+                        else
                             stringResource(R.string.add_to_favorites)
                     )
                 },
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary,
+                containerColor = if (isFavorite.value) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary,
+                contentColor = if (isFavorite.value) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onSecondary,
                 modifier = Modifier.padding(16.dp)
             )
         }
@@ -114,188 +152,86 @@ fun PlayerDetailCompactScreen(
         ) {
             item {
                 player?.let {
-                    // Imagen del jugador
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(220.dp),
-                            contentAlignment = Alignment.Center
-                    ) {
+                    // Imagen
+                    Box(modifier = Modifier.fillMaxWidth().height(220.dp), contentAlignment = Alignment.Center) {
                         Image(
                             painter = painterResource(id = Datasource.getDrawableIdByName(it.photo)),
-                            contentDescription = stringResource(R.string.player_image_desc, it.name),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp),
+                            contentDescription = it.name,
+                            modifier = Modifier.fillMaxWidth().height(200.dp),
                             contentScale = ContentScale.Fit
                         )
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Nombre y equipo
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    ) {
-                        Text(
-                            text = it.name,
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary,
-                            textAlign = TextAlign.Center
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = "${it.position} • ${it.team}",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.Center
-                        )
-
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        Text(
-                            text = "${getFlagEmoji(it.nationality)} ${it.nationality} • ${it.age} años",
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.Center
-                        )
+                    // Info
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(16.dp)) {
+                        Text(it.name, style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, textAlign = TextAlign.Center)
+                        Text("${it.position} • ${it.team}", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("${getFlagEmoji(it.nationality)} ${it.nationality} • ${stringResource(R.string.age_stat, it.age)}", style = MaterialTheme.typography.bodyLarge)
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Estadísticas en fila
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
+                    // Stats
+                    Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                         StatCard(
-                            title = stringResource(R.string.goals),
-                            value = it.goals.toString(),
-                            icon = Icons.Default.SportsSoccer,
-                            modifier = Modifier.weight(1f)
+                            stringResource(R.string.goals),
+                            stringResource(R.string.goals_stat, it.goals),
+                            Icons.Default.SportsSoccer,
+                            Modifier.weight(1f)
                         )
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
+                        Spacer(Modifier.width(8.dp))
                         StatCard(
-                            title = stringResource(R.string.assists),
-                            value = it.assists.toString(),
-                            icon = Icons.Default.Assistant,
-                            modifier = Modifier.weight(1f)
+                            stringResource(R.string.assists),
+                            stringResource(R.string.assists_stat, it.assists),
+                            Icons.Default.Assistant,
+                            Modifier.weight(1f)
                         )
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
+                        Spacer(Modifier.width(8.dp))
                         StatCard(
-                            title = stringResource(R.string.age),
-                            value = it.age.toString(),
-                            icon = Icons.Default.Person,
-                            modifier = Modifier.weight(1f)
+                            stringResource(R.string.age),
+                            stringResource(R.string.age_stat, it.age),
+                            Icons.Default.Person,
+                            Modifier.weight(1f)
                         )
                     }
-
-                    Spacer(modifier = Modifier.height(24.dp))
 
                     // Descripción
-                    Column(
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = stringResource(R.string.about_player),
+                            stringResource(R.string.about_player),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            color = MaterialTheme.colorScheme.primary
                         )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(it.description, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Justify)
 
+                        // Comentarios recientes - CON EL MISMO ESTILO QUE PlayerDetailFavScreen
+                        Spacer(modifier = Modifier.height(24.dp))
                         Text(
-                            text = it.description,
-                            style = MaterialTheme.typography.bodyLarge,
-                            lineHeight = MaterialTheme.typography.bodyLarge.lineHeight.times(1.2),
-                            textAlign = TextAlign.Justify
+                            stringResource(R.string.recent_comments),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.primary
                         )
-                    }
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    // Comentarios
-                    Column(
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = stringResource(R.string.comments),
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-
-                            FloatingActionButton(
-                                onClick = { /* Abrir diálogo para añadir comentario */ },
-                                modifier = Modifier.size(40.dp),
-                                containerColor = MaterialTheme.colorScheme.tertiary
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = stringResource(R.string.add_comment),
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
                         if (sampleComments.isNotEmpty()) {
-                            sampleComments.forEach { comment ->
-                                CommentItem(comment = comment)
-                                Spacer(modifier = Modifier.height(12.dp))
+                            sampleComments.forEach { c ->
+                                CommentItemEnhanced(c)
+                                Spacer(modifier = Modifier.height(8.dp))
                             }
                         } else {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 32.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Comment,
-                                    contentDescription = stringResource(R.string.no_comments),
-                                    modifier = Modifier.size(48.dp),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                
-                                Spacer(modifier = Modifier.height(16.dp))
-                                
-                                Text(
-                                    text = stringResource(R.string.no_comments),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                
-                                Spacer(modifier = Modifier.height(8.dp))
-                                
-                                Text(
-                                    text = stringResource(R.string.be_first),
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
+                            Text(
+                                stringResource(R.string.no_comments),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(vertical = 16.dp)
+                            )
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
                 } ?: run {
-                    // Jugador no encontrado
+                    // Not found state
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -304,26 +240,17 @@ fun PlayerDetailCompactScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.SentimentDissatisfied,
-                            contentDescription = "Not found",
-                            modifier = Modifier.size(64.dp),
-                            tint = MaterialTheme.colorScheme.error
+                            Icons.Default.PersonOff,
+                            contentDescription = stringResource(R.string.player_not_found),
+                            modifier = Modifier.size(80.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-
                         Spacer(modifier = Modifier.height(16.dp))
-
                         Text(
-                            text = stringResource(R.string.player_not_found),
+                            stringResource(R.string.player_not_found),
                             style = MaterialTheme.typography.headlineMedium,
-                            textAlign = TextAlign.Center
-                        )
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        FutButtonComp(
-                            label = stringResource(R.string.back),
-                            icon = Icons.AutoMirrored.Filled.ArrowBack,
-                            onClick = { navController.navigateUp() }
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -332,9 +259,9 @@ fun PlayerDetailCompactScreen(
     }
 }
 
-// Componente de item de comentario
+// Comentario mejorado
 @Composable
-fun CommentItem(comment: Comment) {
+fun CommentItemEnhanced(comment: Comment) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -353,23 +280,25 @@ fun CommentItem(comment: Comment) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Avatar del usuario
-                Surface(
-                    shape = CircleShape,
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    modifier = Modifier.size(40.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(
-                            text = comment.userName.take(2).uppercase(),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            fontWeight = FontWeight.Bold
-                        )
+                Box {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                text = comment.userName.take(2).uppercase(),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.width(12.dp))
-                
+
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = comment.userName,
@@ -377,19 +306,20 @@ fun CommentItem(comment: Comment) {
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
-                    
+
                     Text(
                         text = comment.date,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                
+
+                // Rating con estrellas
                 StarRating(rating = comment.rating)
             }
-            
+
             Spacer(modifier = Modifier.height(12.dp))
-            
+
             Text(
                 text = comment.text,
                 style = MaterialTheme.typography.bodyMedium,
@@ -400,18 +330,59 @@ fun CommentItem(comment: Comment) {
     }
 }
 
-fun getFlagEmoji(nationality: String): String {
-    return when (nationality.lowercase()) {
-        "argentina" -> "🇦🇷"
-        "portugal" -> "🇵🇹"
-        "brasil" -> "🇧🇷"
-        "francia" -> "🇫🇷"
-        "españa" -> "🇪🇸"
-        "noruega" -> "🇳🇴"
-        "inglaterra" -> "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
-        "egipto" -> "🇪🇬"
-        "bélgica" -> "🇧🇪"
-        "alemania" -> "🇩🇪"
-        else -> "🏳️" //por defecto
+// Original
+@Composable
+fun CommentItem(comment: Comment) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = comment.userName.take(1).uppercase(),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = comment.userName,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                StarRating(rating = comment.rating, modifier = Modifier.scale(0.8f))
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = comment.text,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
     }
 }

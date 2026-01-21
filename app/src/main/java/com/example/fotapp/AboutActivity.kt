@@ -39,11 +39,11 @@ class AboutActivity : ComponentActivity() {
     private fun sendEmail() {
         val intent = Intent(Intent.ACTION_SENDTO).apply {
             data = "mailto:".toUri()
-            putExtra(Intent.EXTRA_EMAIL, arrayOf("futconnect@contact.com"))
-            putExtra(Intent.EXTRA_SUBJECT, "Información sobre FutConnect")
-            putExtra(Intent.EXTRA_TEXT, "Hola, me gustaría obtener más información sobre la app FutConnect.")
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(R.string.email_contact.toString()))
+            putExtra(Intent.EXTRA_SUBJECT, R.string.email_subject.toString())
+            putExtra(Intent.EXTRA_TEXT, R.string.email_body.toString())
         }
-        startActivity(Intent.createChooser(intent, "Enviar correo con..."))
+        startActivity(Intent.createChooser(intent, R.string.send_email.toString()))
     }
 }
 
@@ -63,7 +63,7 @@ fun AboutScreen(
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_futconnect),
-            contentDescription = "Logo " + stringResource(R.string.app_name),
+            contentDescription = stringResource(R.string.logo_desc, stringResource(R.string.app_name)),
             modifier = Modifier.size(120.dp)
         )
 
@@ -75,9 +75,9 @@ fun AboutScreen(
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Red social para amantes del fútbol", fontSize = 18.sp)
+        Text(stringResource(R.string.splash_tagline), fontSize = 18.sp)
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Versión 1.0.0", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.version, "1.0.0"), color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.height(24.dp))
         Button(
             onClick = onSendEmail,
@@ -93,7 +93,7 @@ fun AboutScreen(
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Contacto")
+            Text(stringResource(R.string.contact))
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -106,7 +106,7 @@ fun AboutScreen(
                 contentColor = MaterialTheme.colorScheme.onTertiary
             )
         ) {
-            Text("Volver")
+            Text(stringResource(R.string.back))
         }
     }
 }

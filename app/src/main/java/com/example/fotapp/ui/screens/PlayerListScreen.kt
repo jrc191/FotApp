@@ -3,9 +3,10 @@ package com.example.fotapp.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -16,30 +17,48 @@ import com.example.fotapp.ui.components.FutHeaderComp
 import com.example.fotapp.ui.components.PlayerCard
 import com.example.fotapp.ui.components.PlayerCardLand
 
-// Pantalla de lista de jugadores en formato compacto
+@Composable
+fun SearchBarComp(
+    text: String,
+    onTextChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = text,
+        onValueChange = onTextChange,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        placeholder = { Text(stringResource(R.string.search_hint)) }, // Asegúrate de tener este recurso o cambia por texto fijo "Buscar..."
+        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar") },
+        singleLine = true,
+        shape = MaterialTheme.shapes.medium
+    )
+}
+
 @Composable
 fun PlayerListCompactScreen(
     players: List<Player>,
     navController: NavController,
     onFavoriteClick: (Player) -> Unit,
+    searchText: String,
+    onSearchChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     Column(modifier = modifier.fillMaxSize()) {
         FutHeaderComp(title = stringResource(R.string.players_list))
 
-        // Lista de jugadores directa
+        SearchBarComp(text = searchText, onTextChange = onSearchChange)
+
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(4.dp),
-            contentPadding = PaddingValues(vertical = 8.dp)
+            contentPadding = PaddingValues(bottom = 80.dp)
         ) {
             items(players) { player ->
                 PlayerCard(
                     player = player,
-                    onClick = {
-                        navController.navigate("player_detail/${player.id}")
-                    },
+                    onClick = { navController.navigate("player_detail/${player.name}") },
                     onFavoriteClick = { onFavoriteClick(player) }
                 )
             }
@@ -47,49 +66,29 @@ fun PlayerListCompactScreen(
     }
 }
 
-// Pantalla de lista de jugadores en formato medio/expandido
 @Composable
 fun PlayerListMedExpScreen(
     players: List<Player>,
     navController: NavController,
     onFavoriteClick: (Player) -> Unit,
+    searchText: String,
+    onSearchChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     Column(modifier = modifier.fillMaxSize()) {
-        // Barra superior
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.surfaceVariant,
-            shadowElevation = 2.dp
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.players_list),
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.weight(1f),
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
+        FutHeaderComp(title = stringResource(R.string.players_list))
 
-        // Lista de jugadores en tarjetas landscape
+        SearchBarComp(text = searchText, onTextChange = onSearchChange)
+
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(vertical = 16.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            contentPadding = PaddingValues(bottom = 80.dp)
         ) {
             items(players) { player ->
                 PlayerCardLand(
                     player = player,
-                    onClick = {
-                        navController.navigate("player_detail/${player.id}")
-                    },
+                    onClick = { navController.navigate("player_detail/${player.name}") },
                     onFavoriteClick = { onFavoriteClick(player) }
                 )
             }

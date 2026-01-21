@@ -64,13 +64,12 @@ fun PlayerCard(
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.fillMaxWidth()
                 )
-                
+
                 FutTextComp(
                     text = "${player.position} • ${player.team}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    //color = MaterialTheme.colorScheme.primary
+                    style = MaterialTheme.typography.bodyMedium
                 )
-                
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -90,7 +89,7 @@ fun PlayerCard(
 
             // Botón de favoritos
             IconButton(
-                onClick = { 
+                onClick = {
                     Log.d("PlayerCard", "Favorito clickeado para ${player.name}")
                     onFavoriteClick()
                 },
@@ -142,7 +141,7 @@ fun PlayerCardLand(
                         size = 100,
                         modifier = Modifier.padding(end = 16.dp)
                     )
-                    
+
                     Column {
                         FutTextComp(
                             text = player.name,
@@ -150,12 +149,11 @@ fun PlayerCardLand(
                         )
                         FutTextComp(
                             text = "${player.position} • ${player.team}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            //color = MaterialTheme.colorScheme.primary
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
                 }
-                
+
                 // Estadísticas
                 Row(
                     modifier = Modifier.weight(1f),
@@ -164,27 +162,25 @@ fun PlayerCardLand(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         FutTextComp(
                             text = player.goals.toString(),
-                            style = MaterialTheme.typography.titleLarge,
-                            //color = MaterialTheme.colorScheme.secondary
+                            style = MaterialTheme.typography.titleLarge
                         )
                         FutTextComp(
                             text = stringResource(R.string.goals),
                             style = MaterialTheme.typography.labelSmall
                         )
                     }
-                    
+
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         FutTextComp(
                             text = player.assists.toString(),
-                            style = MaterialTheme.typography.titleLarge,
-                            //color = MaterialTheme.colorScheme.tertiary
+                            style = MaterialTheme.typography.titleLarge
                         )
                         FutTextComp(
                             text = stringResource(R.string.assists),
                             style = MaterialTheme.typography.labelSmall
                         )
                     }
-                    
+
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         FutTextComp(
                             text = player.age.toString(),
@@ -196,10 +192,10 @@ fun PlayerCardLand(
                         )
                     }
                 }
-                
+
                 // Botón de favoritos
                 IconButton(
-                    onClick = { 
+                    onClick = {
                         Log.d("PlayerCardLand", "Favorito clickeado para ${player.name}")
                         onFavoriteClick()
                     },
@@ -213,7 +209,7 @@ fun PlayerCardLand(
                     )
                 }
             }
-            
+
             // Descripción
             Spacer(modifier = Modifier.height(12.dp))
             FutTextComp(
@@ -258,9 +254,9 @@ fun FavPlayerCard(
                     drawable = Datasource.getDrawableIdByName(player.photo),
                     size = 60
                 )
-                
+
                 Spacer(modifier = Modifier.width(16.dp))
-                
+
                 Column {
                     FutTextComp(
                         text = player.name,
@@ -268,14 +264,13 @@ fun FavPlayerCard(
                     )
                     FutTextComp(
                         text = player.team,
-                        style = MaterialTheme.typography.bodySmall,
-                        //color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = MaterialTheme.typography.bodySmall
                     )
                 }
             }
-            
+
             IconButton(
-                onClick = { 
+                onClick = {
                     Log.d("FavPlayerCard", "Eliminar de favoritos: ${player.name}")
                     onRemoveClick()
                 }

@@ -73,7 +73,7 @@ fun ProfileCompactScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Miembro desde $memberSince",
+                    text = stringResource(R.string.member_since, memberSince),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                 )
@@ -90,20 +90,32 @@ fun ProfileCompactScreen(
             OutlinedCard(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
                     Text(
-                        text = "Información personal",
+                        text = stringResource(R.string.personal_info),
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
-                    ProfileInfoRow(Icons.Default.Email, "Email", if(isLogged) email else "****")
-                    ProfileInfoRow(Icons.Default.LocationOn, "Ubicación", location)
-                    ProfileInfoRow(Icons.Default.SportsSoccer, "Equipo favorito", favoriteTeam)
+                    ProfileInfoRow(
+                        Icons.Default.Email,
+                        stringResource(R.string.email),
+                        if(isLogged) email else "****"
+                    )
+                    ProfileInfoRow(
+                        Icons.Default.LocationOn,
+                        stringResource(R.string.location),
+                        location
+                    )
+                    ProfileInfoRow(
+                        Icons.Default.SportsSoccer,
+                        stringResource(R.string.favorite_team),
+                        favoriteTeam
+                    )
                 }
             }
 
             // Estadísticas
             Text(
-                text = "Mis estadísticas",
+                text = stringResource(R.string.my_stats),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -112,9 +124,24 @@ fun ProfileCompactScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                StatCard("Favoritos", "$favCount", Icons.Default.Favorite, Modifier.weight(1f))
-                StatCard("Comentarios", "47", Icons.AutoMirrored.Filled.Comment, Modifier.weight(1f))
-                StatCard("Días activo", "128", Icons.Default.CalendarToday, Modifier.weight(1f))
+                StatCard(
+                    stringResource(R.string.favorites),
+                    "$favCount",
+                    Icons.Default.Favorite,
+                    Modifier.weight(1f)
+                )
+                StatCard(
+                    stringResource(R.string.comments_count),
+                    "47",
+                    Icons.AutoMirrored.Filled.Comment,
+                    Modifier.weight(1f)
+                )
+                StatCard(
+                    stringResource(R.string.days_active),
+                    "128",
+                    Icons.Default.CalendarToday,
+                    Modifier.weight(1f)
+                )
             }
 
             // Botones
@@ -132,7 +159,11 @@ fun ProfileCompactScreen(
                     onClick = onAboutClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(Icons.Default.Info, "Acerca de", Modifier.size(20.dp))
+                    Icon(
+                        Icons.Default.Info,
+                        stringResource(R.string.about),
+                        Modifier.size(20.dp)
+                    )
                     Spacer(Modifier.width(8.dp))
                     Text(stringResource(R.string.about))
                 }
@@ -209,7 +240,7 @@ fun ProfileMedExpScreen(
                                 textAlign = TextAlign.Center
                             )
                             Text(
-                                text = "Miembro desde $memberSince",
+                                text = stringResource(R.string.member_since, memberSince),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                             )
@@ -232,7 +263,11 @@ fun ProfileMedExpScreen(
                                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
                             ) {
-                                Icon(Icons.Default.Info, "Acerca de", Modifier.size(20.dp))
+                                Icon(
+                                    Icons.Default.Info,
+                                    stringResource(R.string.about),
+                                    Modifier.size(20.dp)
+                                )
                                 Spacer(Modifier.width(8.dp))
                                 Text(stringResource(R.string.about))
                             }
@@ -258,23 +293,39 @@ fun ProfileMedExpScreen(
                             modifier = Modifier.fillMaxWidth().padding(24.dp)
                         ) {
                             Text(
-                                text = "Información del perfil",
+                                text = stringResource(R.string.profile_info),
                                 style = MaterialTheme.typography.headlineSmall,
                                 color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.padding(bottom = 20.dp)
                             )
 
                             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                                ProfileInfoRowLand(Icons.Default.Person, "Usuario", profileName)
-                                ProfileInfoRowLand(Icons.Default.Email, "Email", if(isLogged) email else "****")
-                                ProfileInfoRowLand(Icons.Default.LocationOn, "Ubicación", location)
-                                ProfileInfoRowLand(Icons.Default.SportsSoccer, "Equipo", favoriteTeam)
+                                ProfileInfoRowLand(
+                                    Icons.Default.Person,
+                                    stringResource(R.string.profile_name_placeholder),
+                                    profileName
+                                )
+                                ProfileInfoRowLand(
+                                    Icons.Default.Email,
+                                    stringResource(R.string.email),
+                                    if(isLogged) email else "****"
+                                )
+                                ProfileInfoRowLand(
+                                    Icons.Default.LocationOn,
+                                    stringResource(R.string.location),
+                                    location
+                                )
+                                ProfileInfoRowLand(
+                                    Icons.Default.SportsSoccer,
+                                    stringResource(R.string.favorite_team),
+                                    favoriteTeam
+                                )
                             }
                         }
                     }
 
                     Text(
-                        text = "Actividad en FutConnect",
+                        text = stringResource(R.string.activity_futconnect),
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -283,10 +334,30 @@ fun ProfileMedExpScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        StatCard("Favoritos", "$favCount", Icons.Default.Favorite, Modifier.weight(1f))
-                        StatCard("Comentarios", "47", Icons.AutoMirrored.Filled.Comment, Modifier.weight(1f))
-                        StatCard("Días", "28", Icons.Default.Star, Modifier.weight(1f))
-                        StatCard("Amigos", "15", Icons.Default.People, Modifier.weight(1f))
+                        StatCard(
+                            stringResource(R.string.favorites),
+                            "$favCount",
+                            Icons.Default.Favorite,
+                            Modifier.weight(1f)
+                        )
+                        StatCard(
+                            stringResource(R.string.comments_count),
+                            "47",
+                            Icons.AutoMirrored.Filled.Comment,
+                            Modifier.weight(1f)
+                        )
+                        StatCard(
+                            stringResource(R.string.days_active),
+                            "28",
+                            Icons.Default.Star,
+                            Modifier.weight(1f)
+                        )
+                        StatCard(
+                            stringResource(R.string.friends),
+                            "15",
+                            Icons.Default.People,
+                            Modifier.weight(1f)
+                        )
                     }
 
                     Card(
@@ -297,15 +368,30 @@ fun ProfileMedExpScreen(
                     ) {
                         Column(modifier = Modifier.fillMaxWidth().padding(24.dp)) {
                             Text(
-                                text = "Logros",
+                                text = stringResource(R.string.achievements),
                                 style = MaterialTheme.typography.titleLarge,
                                 color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.padding(bottom = 16.dp)
                             )
                             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                                AchievementBadge(Icons.Default.Favorite, "Fanático", "10+ favs", Modifier.weight(1f))
-                                AchievementBadge(Icons.AutoMirrored.Filled.Comment, "Comentarista", "25+ comms", Modifier.weight(1f))
-                                AchievementBadge(Icons.Default.Star, "Activo", "100+ días", Modifier.weight(1f))
+                                AchievementBadge(
+                                    Icons.Default.Favorite,
+                                    stringResource(R.string.achievement_fanatic),
+                                    "10+ favs",
+                                    Modifier.weight(1f)
+                                )
+                                AchievementBadge(
+                                    Icons.AutoMirrored.Filled.Comment,
+                                    stringResource(R.string.achievement_commentator),
+                                    "25+ comms",
+                                    Modifier.weight(1f)
+                                )
+                                AchievementBadge(
+                                    Icons.Default.Star,
+                                    stringResource(R.string.achievement_active),
+                                    "100+ días",
+                                    Modifier.weight(1f)
+                                )
                             }
                         }
                     }
@@ -315,7 +401,6 @@ fun ProfileMedExpScreen(
         }
     }
 }
-
 
 @Composable
 fun ProfileInfoRow(

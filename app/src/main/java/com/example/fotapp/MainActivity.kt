@@ -10,12 +10,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -39,190 +39,162 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun FutConnectApp() {
-    // Estados
+    // 1. ESTADOS GLOBALES
     var showSplash by rememberSaveable { mutableStateOf(true) }
     var favoriteIds by rememberSaveable { mutableStateOf(setOf<Int>()) }
+    var searchText by rememberSaveable { mutableStateOf("") }
 
-    // Lista de jugadores con estado de favorito basado en IDs
-    val players = remember(favoriteIds) {
-        Datasource.playersList.map { player ->
-            player.copy(isFavorite = favoriteIds.contains(player.id))
+    // 2. PREPARACIÓN DE DATOS (Mapeo de favoritos + Filtrado por búsqueda)
+    val allPlayersWithFavs = remember(favoriteIds) {
+        Datasource.playersList.map { it.copy(isFavorite = favoriteIds.contains(it.id)) }
+    }
+
+    val displayedPlayers = if (searchText.isBlank()) {
+        allPlayersWithFavs
+    } else {
+        allPlayersWithFavs.filter {
+            it.name.contains(searchText, ignoreCase = true) ||
+                    it.team.contains(searchText, ignoreCase = true)
         }
     }
 
-    // Configuración de navegación
-    val navController = rememberNavController()
-    val currentBackStack by navController.currentBackStackEntryAsState()
-    val currentRoute = currentBackStack?.destination?.route
+    val favoritePlayers = allPlayersWithFavs.filter { it.isFavorite }
 
-    // Tamaños de ventana
+    // 3. HERRAMIENTAS DE UI
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
     val windowSize = getWindowSizeClass(LocalContext.current as Activity)
 
-    fun toggleFavorite(playerId: Int) {
-        favoriteIds = if (favoriteIds.contains(playerId)) {
-            favoriteIds - playerId
-        } else {
-            favoriteIds + playerId
-        }
+    // Funciones Helper
+    fun toggleFavorite(id: Int) {
+        favoriteIds = if (favoriteIds.contains(id)) favoriteIds - id else favoriteIds + id
     }
 
-    fun removeFavorite(player: Player) {
-        favoriteIds = favoriteIds - player.id
-    }
-
-    val favoritePlayers = players.filter { it.isFavorite }
-
-    // Splash Screen
     if (showSplash) {
-        SplashScreen(onTimeout = {
-            showSplash = false
-        })
+        SplashScreen { showSplash = false }
     } else {
-        FotAppTheme {
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-                bottomBar = {
-                    // Mostrar BottomNavigationBar en TODAS las pantallas excepto splash
-                    if (currentRoute != null && currentRoute != "splash") {
-                        BottomNavigationBar(navController, currentRoute)
+        Scaffold(
+            bottomBar = {
+                // Menú visible en todas las pantallas principales
+                if (currentRoute != null && !currentRoute.contains("detail")) {
+                    BottomNavigationBar(navController)
+                }
+            }
+        ) { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = "player_list",
+                modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding(), top = innerPadding.calculateTopPadding())
+            ) {
+                // RUTA 1: Lista de Elementos (Con búsqueda)
+                composable("player_list") {
+                    if (windowSize == WindowWidthSizeClass.Compact) {
+                        PlayerListCompactScreen(
+                            players = displayedPlayers,
+                            navController = navController,
+                            onFavoriteClick = { toggleFavorite(it.id) },
+                            searchText = searchText,
+                            onSearchChange = { searchText = it }
+                        )
+                    } else {
+                        PlayerListMedExpScreen(
+                            players = displayedPlayers,
+                            navController = navController,
+                            onFavoriteClick = { toggleFavorite(it.id) },
+                            searchText = searchText,
+                            onSearchChange = { searchText = it }
+                        )
                     }
                 }
-            ) { innerPadding ->
-                NavHost(
-                    navController = navController,
-                    startDestination = "player_list",
-                    modifier = Modifier.padding(innerPadding)
-                ) {
 
-                    composable("player_list") {
-                        when (windowSize) {
-                            WindowWidthSizeClass.Compact -> {
-                                PlayerListCompactScreen(
-                                    players = players,
-                                    navController = navController,
-                                    onFavoriteClick = { player ->
-                                        toggleFavorite(player.id)
-                                    },
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            }
-                            else -> {
-                                PlayerListMedExpScreen(
-                                    players = players,
-                                    navController = navController,
-                                    onFavoriteClick = { player ->
-                                        toggleFavorite(player.id)
-                                    },
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            }
-                        }
-                    }
-
-                    composable("player_detail/{player_id}") { backStackEntry ->
-                        val playerId = backStackEntry.arguments?.getString("player_id")?.toIntOrNull() ?: 0
-
-                        // Buscamos el estado actual del jugador
-                        val playerInState = players.find { it.id == playerId }
-                        val isFav = playerInState?.isFavorite ?: false
-
-                        PlayerDetailCompactScreen(
-                            playerId = playerId,
-                            isFavoriteInitial = isFav,
+                // RUTA 2: Favoritos
+                composable("fav_list") {
+                    if (windowSize == WindowWidthSizeClass.Compact) {
+                        FavListCompactScreen(
+                            favoritePlayers = favoritePlayers,
                             navController = navController,
-                            onFavoriteClick = { isFavorite ->
-                                if (playerId != 0) {
-                                    toggleFavorite(playerId)
-                                }
-                            },
-                            isFromFavorites = false,
-                            modifier = Modifier.fillMaxSize()
+                            onRemoveFavorite = { toggleFavorite(it.id) }
+                        )
+                    } else {
+                        FavListMedExpScreen(
+                            favoritePlayers = favoritePlayers,
+                            navController = navController,
+                            onRemoveFavorite = { toggleFavorite(it.id) }
                         )
                     }
+                }
 
-                    composable("fav_list") {
-                        when (windowSize) {
-                            WindowWidthSizeClass.Compact -> {
-                                FavListCompactScreen(
-                                    favoritePlayers = favoritePlayers,
-                                    navController = navController,
-                                    onRemoveFavorite = { player ->
-                                        removeFavorite(player)
-                                    },
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            }
-                            else -> {
-                                FavListMedExpScreen(
-                                    favoritePlayers = favoritePlayers,
-                                    navController = navController,
-                                    onRemoveFavorite = { player ->
-                                        removeFavorite(player)
-                                    },
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            }
-                        }
-                    }
-
-                    composable("fav_detail/{player_id}") { backStackEntry ->
-                        val playerId = backStackEntry.arguments?.getString("player_id")?.toIntOrNull() ?: 0
-
-                        PlayerDetailFavCompactScreen(
-                            playerId = playerId,
-                            navController = navController,
-                            onRemoveFavorite = {
-                                val player = favoritePlayers.find { it.id == playerId }
-                                player?.let { removeFavorite(it) }
-                                navController.navigateUp()
-                            },
-                            modifier = Modifier.fillMaxSize()
+                // RUTA 3: Perfil (Con login toggle)
+                composable("profile") {
+                    // Usamos la misma pantalla adaptada
+                    if (windowSize == WindowWidthSizeClass.Compact) {
+                        ProfileCompactScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            favCount = favoritePlayers.size,
+                            onAboutClick = { navController.navigate("about") }
+                        )
+                    } else {
+                        ProfileMedExpScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            favCount = favoritePlayers.size,
+                            onAboutClick = { navController.navigate("about") }
                         )
                     }
+                }
 
-                    composable("profile") {
-                        when (windowSize) {
-                            WindowWidthSizeClass.Compact -> {
-                                ProfileCompactScreen(
-                                    modifier = Modifier.fillMaxSize(),
-                                    favCount = favoritePlayers.size,
-                                    onAboutClick = {
-                                        navController.navigate("about")
-                                    }
-                                )
+                // RUTA 4: About (Info App)
+                composable("about") {
+                    val context = LocalContext.current
+                    AboutScreen(
+                        context = context,
+                        onSendEmail = {
+                            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                                data = Uri.parse("mailto:info@futconnect.com")
                             }
-                            else -> {
-                                ProfileMedExpScreen(
-                                    modifier = Modifier.fillMaxSize(),
-                                    favCount = favoritePlayers.size,
-                                    onAboutClick = {
-                                        navController.navigate("about")
-                                    }
-                                )
-                            }
+                            context.startActivity(Intent.createChooser(intent, "Email"))
+                        },
+                        onBackClick = { navController.navigateUp() }
+                    )
+                }
+
+                // RUTA 5: Detalle General (Por NOMBRE)
+                composable("player_detail/{playerName}") { backStackEntry ->
+                    val name = backStackEntry.arguments?.getString("playerName") ?: ""
+
+                    // Buscar si es favorito en nuestra lista actualizada
+                    val isFav = favoriteIds.contains(Datasource.getPlayerByName(name)?.id ?: -1)
+
+                    PlayerDetailCompactScreen(
+                        playerName = name,
+                        isFavoriteInitial = isFav,
+                        navController = navController,
+                        onFavoriteClick = { newState ->
+                            // Recibimos boolean, pero necesitamos ID. Buscamos de nuevo o pasamos ID.
+                            val p = Datasource.getPlayerByName(name)
+                            p?.let { toggleFavorite(it.id) }
                         }
-                    }
+                    )
+                }
 
-                    composable("about") {
-                        val context = LocalContext.current
-                        AboutScreen(
-                            context = context,
-                            onSendEmail = {
-                                val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-                                    data = Uri.parse("mailto:soporte@futconnect.com")
-                                    putExtra(Intent.EXTRA_SUBJECT, "Consulta FutConnect")
-                                    putExtra(Intent.EXTRA_TEXT, "Hola, me gustaría...")
-                                }
-                                context.startActivity(Intent.createChooser(emailIntent, "Enviar correo con..."))
-                            },
-                            onBackClick = {
+                // RUTA 6: Detalle Favorito (Por NOMBRE, con comentarios de fans)
+                composable("fav_detail/{playerName}") { backStackEntry ->
+                    val name = backStackEntry.arguments?.getString("playerName") ?: ""
+
+                    PlayerDetailFavCompactScreen(
+                        playerName = name,
+                        navController = navController,
+                        onRemoveFavorite = {
+                            val p = Datasource.getPlayerByName(name)
+                            p?.let {
+                                toggleFavorite(it.id)
                                 navController.navigateUp()
                             }
-                        )
-                    }
+                        }
+                    )
                 }
             }
         }

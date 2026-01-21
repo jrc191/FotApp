@@ -8,4 +8,23 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="splash_bg">#FFFFFF</color>
+    <color name="primary">@color/purple_500</color>
+    <color name="onPrimary">@color/white</color>
+    <color name="primaryContainer">@color/purple_200</color>
+    <color name="onPrimaryContainer">@color/purple_700</color>
+    <color name="secondary">@color/teal_200</color>
+    <color name="onSecondary">@color/black</color>
+    <color name="secondaryContainer">#FF80DEEA</color>
+    <color name="onSecondaryContainer">@color/teal_700</color>
+    <color name="tertiary">#FFEFB8C8</color>
+    <color name="onTertiary">@color/black</color>
+    <color name="error">#FFB3261E</color>
+    <color name="onError">@color/white</color>
+    <color name="background">@color/white</color>
+    <color name="onBackground">@color/black</color>
+    <color name="surface">@color/white</color>
+    <color name="onSurface">@color/black</color>
+    <color name="surfaceVariant">#FFE7E0EC</color>
+    <color name="onSurfaceVariant">#FF49454E</color>
+    <color name="outline">#FF79747E</color>
 </resources>

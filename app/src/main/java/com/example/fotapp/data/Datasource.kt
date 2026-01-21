@@ -4,7 +4,7 @@ import com.example.fotapp.R
 import com.example.fotapp.model.Player
 
 object Datasource {
-    
+
     val playersList = listOf(
         Player(
             id = 1,
@@ -127,17 +127,22 @@ object Datasource {
             description = "Mediocampista elegante. Balón de Oro 2018."
         )
     )
-    
+
     fun getPlayerById(id: Int): Player? {
         return playersList.find { it.id == id }
     }
-    
+
+    // NUEVO: Requerido para buscar detalles por nombre
+    fun getPlayerByName(name: String): Player? {
+        return playersList.find { it.name.equals(name, ignoreCase = true) }
+    }
+
     fun getPlayersByTeam(team: String): List<Player> {
         return playersList.filter { it.team == team }
     }
-    
+
     fun getDrawableIdByName(name: String): Int {
-        return when (name.toLowerCase()) {
+        return when (name.lowercase()) {
             "messi" -> R.drawable.messi
             "ronaldo" -> R.drawable.ronaldo
             "mbappe" -> R.drawable.mbappe
@@ -149,6 +154,24 @@ object Datasource {
             "kane" -> R.drawable.kane
             "modric" -> R.drawable.modric
             else -> R.drawable.ic_futconnect
+        }
+    }
+
+    fun getFlagEmoji(nationality: String): String {
+        return when (nationality.lowercase()) {
+            "argentina" -> "🇦🇷"
+            "portugal" -> "🇵🇹"
+            "francia" -> "🇫🇷"
+            "bélgica" -> "🇧🇪"
+            "noruega" -> "🇳🇴"
+            "brasil" -> "🇧🇷"
+            "polonia" -> "🇵🇱"
+            "egipto" -> "🇪🇬"
+            "inglaterra" -> "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
+            "croacia" -> "🇭🇷"
+            "españa" -> "🇪🇸"
+            "alemania" -> "🇩🇪"
+            else -> "⚽"
         }
     }
 }
