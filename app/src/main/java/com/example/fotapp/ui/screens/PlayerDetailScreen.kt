@@ -40,18 +40,15 @@ fun PlayerDetailCompactScreen(
     // Buscar por nombre
     val player = remember(playerName) { Datasource.getPlayerByName(playerName) }
 
-    // Estado local para UI inmediata
     val isFavorite = remember { mutableStateOf(isFavoriteInitial) }
 
-    // Diálogo de confirmación (añadido para consistencia)
+    // Diálogo de confirmación
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    // Actualizar estado si cambia desde fuera
     LaunchedEffect(isFavoriteInitial) {
         isFavorite.value = isFavoriteInitial
     }
 
-    // Datos dummy de comentarios
     val sampleComments = remember {
         listOf(
             Comment(1, player?.id ?: 0, "Juan Pérez", "¡Excelente jugador!", "2024-01-15", 5),

@@ -49,6 +49,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation(libs.material3)
     implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("com.google.android.material:material:1.12.0")
     // Retrofit (HTTP client)
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
 

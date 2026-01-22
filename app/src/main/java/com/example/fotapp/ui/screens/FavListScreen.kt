@@ -125,8 +125,6 @@ fun FavListMedExpScreen(
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         rowPlayers.forEach { player ->
-                            // CORRECCIÓN: Envolvemos en Box con weight(1f)
-                            // Esto asegura que cada tarjeta ocupe exactamente el 50% del ancho
                             Box(modifier = Modifier.weight(1f)) {
                                 FavPlayerCard(
                                     player = player,

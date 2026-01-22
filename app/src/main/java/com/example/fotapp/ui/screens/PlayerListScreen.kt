@@ -29,7 +29,7 @@ fun SearchBarComp(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        placeholder = { Text(stringResource(R.string.search_hint)) }, // Asegúrate de tener este recurso o cambia por texto fijo "Buscar..."
+        placeholder = { Text(stringResource(R.string.search_hint)) },
         leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar") },
         singleLine = true,
         shape = MaterialTheme.shapes.medium
