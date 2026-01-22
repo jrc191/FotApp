@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">FutConnect</string>
-    <string name="version">Versión: </string>
+    <string name="version">Versión: 1.0.0</string>
 
     <!-- Strings para componentes -->
     <string name="default_content_descrip">Image content</string>

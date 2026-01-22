@@ -59,5 +59,15 @@ fun AboutScreen(
             Spacer(Modifier.width(8.dp))
             Text("Contactar Soporte")
         }
+
+        Button(
+            onClick = onBackClick,
+            modifier = Modifier
+                .padding(top = 16.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+        ) {
+            Text("Volver")
+        }
     }
 }
