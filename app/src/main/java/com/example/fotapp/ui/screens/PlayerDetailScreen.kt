@@ -203,7 +203,7 @@ fun PlayerDetailCompactScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(it.description, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Justify)
 
-                        // Comentarios recientes - CON EL MISMO ESTILO QUE PlayerDetailFavScreen
+                        // Comentarios recientes
                         Spacer(modifier = Modifier.height(24.dp))
                         Text(
                             stringResource(R.string.recent_comments),
@@ -228,7 +228,6 @@ fun PlayerDetailCompactScreen(
                         }
                     }
                 } ?: run {
-                    // Not found state
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
