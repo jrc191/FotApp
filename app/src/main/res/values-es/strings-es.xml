@@ -1,0 +1,126 @@
+<resources>
+    <string name="app_name">FutConnect</string>
+    <string name="version">Versión: 1.0.0</string>
+
+    <!-- Strings para componentes -->
+    <string name="default_content_descrip">Image content</string>
+    <string name="avatar_desc">User avatar</string>
+    <string name="favorite_desc">Add to favorites</string>
+    <string name="remove_favorite_desc">Remove from favorites</string>
+    <string name="goals_template">⚽ %d goles</string>
+    <string name="assists_template">🎯 %d asistencias</string>
+    <string name="age_template">%d años</string>
+    <string name="personal_collection">Colección Personal</string>
+    <string name="personal_collection_desc">Este jugador está guardado en tu dispositivo.</string>
+    <string name="fan_comments">Comentarios de Fans</string>
+    <string name="fan_badge">FAN</string>
+    
+    <!-- Títulos de pantallas -->
+    <string name="players_list">Jugadores</string>
+    <string name="favorites_list">Favoritos</string>
+    <string name="profile">Perfil</string>
+    <string name="about">Acerca de</string>
+    
+    <!-- Estadísticas -->
+    <string name="goals">Goles</string>
+    <string name="assists">Asistencias</string>
+    <string name="age">Edad</string>
+    <string name="position">Posición</string>
+    <string name="team">Equipo</string>
+    <string name="nationality">Nacionalidad</string>
+    
+    <!-- Botones -->
+    <string name="login">Iniciar Sesión</string>
+    <string name="logout">Cerrar Sesión</string>
+    <string name="back">Volver</string>
+    <string name="add_comment">Añadir Comentario</string>
+    
+    <!-- Mensajes -->
+    <string name="player_not_found">Jugador no encontrado</string>
+    <string name="no_favorites">No tienes jugadores favoritos</string>
+    <string name="add_to_favorites">Añadir a favoritos</string>
+    <string name="remove_from_favorites">Eliminar de favoritos</string>
+    
+    <!-- Placeholders -->
+    <string name="profile_name">Nombre de perfil</string>
+    <string name="comment_hint">Escribe tu comentario aquí...</string>
+    <string name="rating_hint">Puntuación</string>
+    <string name="search_players">Buscar jugadores...</string>
+    <string name="player_image_desc">Descripcion del jugador</string>
+
+    <string name="player_detail">Detalle del jugador</string>
+    <string name="about_app">Acerca de la app</string>
+    <string name="features">Características</string>
+    <string name="contact_team">Contactar al equipo</string>
+    <string name="comments">Comentarios</string>
+    <string name="about_player">Sobre el jugador</string>
+    <string name="statistics">Estadísticas</string>
+    <string name="personal_info">Información personal</string>
+    <string name="my_stats">Mis estadísticas</string>
+    <string name="achievements">Logros</string>
+    <string name="activity">Actividad</string>
+    <string name="no_comments">No hay comentarios todavía</string>
+    <string name="be_first">¡Sé el primero!</string>
+    <string name="favorite_detail">Detalles del favorito\n</string>
+    <string name="splash_tagline">Red Social para los Amantes del Fútbol</string>
+
+    <!-- Buscador -->
+    <string name="search_hint">Buscar jugador por nombre...</string>
+    <string name="search">Buscar</string>
+    <string name="clear_search">Limpiar búsqueda</string>
+
+    <!-- Diálogo de confirmación -->
+    <string name="delete_dialog_title">Eliminar de favoritos</string>
+    <string name="delete_dialog_message">¿Estás seguro de que deseas eliminar a %s de tu lista?</string>
+    <string name="delete">Eliminar</string>
+    <string name="cancel">Cancelar</string>
+
+    <!-- Formateo de estadísticas -->
+    <string name="goals_stat">%d</string>
+    <string name="assists_stat">%d</string>
+    <string name="age_stat">%d años</string>
+    <string name="description">Descripción</string>
+    <string name="recent_comments">Comentarios recientes</string>
+
+    <!-- Perfil de usuario -->
+    <string name="profile_name_placeholder">Usuario</string>
+    <string name="email_placeholder">correo@ejemplo.com</string>
+    <string name="location_placeholder">Ciudad, País</string>
+    <string name="favorite_team_placeholder">Equipo favorito</string>
+    <string name="member_since">Miembro desde %s</string>
+    <string name="days_active">Días activo</string>
+    <string name="friends">Amigos</string>
+    <string name="achievement_fanatic">Fanático</string>
+    <string name="achievement_commentator">Comentarista</string>
+    <string name="achievement_active">Activo</string>
+
+    <string name="logo_desc">Logo de %s</string>
+    <string name="send_email">Enviar correo con...</string>
+    <string name="send_email_desc">Icono para enviar correo</string>
+    <string name="contact">Contacto</string>
+    <string name="email_contact">futconnect@gmail.com</string>
+    <string name="email_subject">Solicitud de Información</string>
+    <string name="email_body">Hola, me gustaría obtener más información sobre la app FutConnect.</string>
+    <string name="warning">Advertencia</string>
+    <string name="add_favorites_hint">Añade jugadores a favoritos tocando el icono ❤️ en la lista de jugadores</string>
+    <string name="remove_favorite_confirm">¿Quitar a %s de favoritos?</string>
+
+    <!-- Añadir estos strings al final del archivo strings.xml -->
+    <string name="error">Error</string>
+    <string name="success">Éxito</string>
+    <string name="no_favorites_desc">No hay favoritos</string>
+    <string name="fanatic">Fanático</string>
+    <string name="commentator">Comentarista</string>
+    <string name="active">Activo</string>
+    <string name="profile_info">Información del perfil</string>
+    <string name="activity_futconnect">Actividad en FutConnect</string>
+    <string name="players">Jugadores</string>
+    <string name="favorites">Favoritos</string>
+    <string name="info">Información</string>
+    <string name="email">Correo electrónico</string>
+    <string name="location">Ubicación</string>
+    <string name="favorite_team">Equipo favorito</string>
+    <string name="comments_count">Comentarios</string>
+
+
+</resources>

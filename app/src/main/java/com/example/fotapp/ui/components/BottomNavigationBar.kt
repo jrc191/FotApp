@@ -1,4 +1,3 @@
-// BottomNavigationBar.kt CORREGIDO
 package com.example.fotapp.ui.components
 
 import androidx.compose.material.icons.Icons
