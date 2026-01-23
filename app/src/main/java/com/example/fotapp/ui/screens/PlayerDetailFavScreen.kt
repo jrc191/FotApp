@@ -108,7 +108,6 @@ fun PlayerDetailFavCompactScreen(
             )
         },
         floatingActionButton = {
-            // ✅ AÑADIDO: FAB para quitar de favoritos
             ExtendedFloatingActionButton(
                 onClick = { showDeleteDialog = true },
                 icon = {

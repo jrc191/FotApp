@@ -1,64 +1,113 @@
 <resources>
     <string name="app_name">FutConnect</string>
+    <string name="version">Version: 1.0.0</string>
 
-    <string name="players">Players</string>
-    <string name="favorites">Favorites</string>
+    <string name="default_content_descrip">Image content</string>
+    <string name="avatar_desc">User avatar</string>
+    <string name="favorite_desc">Add to favorites</string>
+    <string name="remove_favorite_desc">Remove from favorites</string>
+    <string name="goals_template">⚽ %d goals</string>
+    <string name="assists_template">🎯 %d assists</string>
+    <string name="age_template">%d years</string>
+    <string name="personal_collection">Personal Collection</string>
+    <string name="personal_collection_desc">This player is saved on your device.</string>
+    <string name="fan_comments">Fan Comments</string>
+    <string name="fan_badge">FAN</string>
+
+    <string name="players_list">Players</string>
+    <string name="favorites_list">Favorites</string>
     <string name="profile">Profile</string>
-    <string name="info">Info</string>
-    <string name="back">Back</string>
-
-    <string name="players_list">Players List</string>
-    <string name="search_hint">Search player or team...</string>
-    <string name="player_detail">Player Detail</string>
-
-    <string name="favorites_list">Favorites List</string>
-    <string name="no_favorites">No favorites yet</string>
-    <string name="add_favorites_hint">Add players by tapping the heart icon in the list</string>
-    <string name="remove_favorite_confirm">Are you sure you want to remove %1$s from favorites?</string>
-    <string name="delete_dialog_title">Remove Favorite</string>
-    <string name="delete_dialog_message">Remove %1$s from your list?</string>
-    <string name="delete">Delete</string>
-    <string name="cancel">Cancel</string>
-    <string name="warning">Warning</string>
-    <string name="remove_from_favorites">Remove from favorites</string>
-    <string name="favorite_desc">Favorite</string>
-
-    <string name="member_since">Member since %1$s</string>
-    <string name="personal_info">Personal Information</string>
-    <string name="profile_info">Profile Info</string>
-    <string name="email">Email</string>
-    <string name="location">Location</string>
-    <string name="favorite_team">Favorite Team</string>
-    <string name="my_stats">My Stats</string>
-    <string name="comments_count">Comments</string>
-    <string name="days_active">Active Days</string>
-    <string name="friends">Friends</string>
-    <string name="login">Log In</string>
-    <string name="logout">Log Out</string>
     <string name="about">About</string>
-    <string name="activity_futconnect">Activity in FutConnect</string>
-    <string name="achievements">Achievements</string>
-    <string name="achievement_fanatic">Fanatic</string>
-    <string name="achievement_commentator">Commentator</string>
-    <string name="achievement_active">Active</string>
-    <string name="profile_name_placeholder">User</string>
 
     <string name="goals">Goals</string>
     <string name="assists">Assists</string>
     <string name="age">Age</string>
-    <string name="goals_stat">%1$d Goals</string>
-    <string name="assists_stat">%1$d Assists</string>
-    <string name="age_stat">%1$d Years</string>
-    <string name="personal_collection">Personal Collection</string>
-    <string name="personal_collection_desc">You have collected distinct cards of this player.</string>
-    <string name="about_player">About the Player</string>
-    <string name="fan_comments">Fan Comments</string>
-    <string name="no_comments">No comments yet.</string>
-    <string name="fan_badge">FAN</string>
-    <string name="player_not_found">Player not found</string>
+    <string name="position">Position</string>
+    <string name="team">Team</string>
+    <string name="nationality">Nationality</string>
 
-    <string name="email_contact">info@futconnect.com</string>
-    <string name="email_subject">Support Request</string>
-    <string name="email_body">Hello, I need help with...</string>
-    <string name="send_email">Send email...</string>
+    <string name="login">Log In</string>
+    <string name="logout">Log Out</string>
+    <string name="back">Back</string>
+    <string name="add_comment">Add Comment</string>
+
+    <string name="player_not_found">Player not found</string>
+    <string name="no_favorites">You have no favorite players</string>
+    <string name="add_to_favorites">Add to favorites</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
+
+    <string name="profile_name">Profile name</string>
+    <string name="comment_hint">Write your comment here...</string>
+    <string name="rating_hint">Rating</string>
+    <string name="search_players">Search players...</string>
+    <string name="player_image_desc">Player description</string>
+
+    <string name="player_detail">Player detail</string>
+    <string name="about_app">About the app</string>
+    <string name="features">Features</string>
+    <string name="contact_team">Contact the team</string>
+    <string name="comments">Comments</string>
+    <string name="about_player">About the player</string>
+    <string name="statistics">Statistics</string>
+    <string name="personal_info">Personal info</string>
+    <string name="my_stats">My stats</string>
+    <string name="achievements">Achievements</string>
+    <string name="activity">Activity</string>
+    <string name="no_comments">No comments yet</string>
+    <string name="be_first">Be the first!</string>
+    <string name="favorite_detail">Favorite details\n</string>
+    <string name="splash_tagline">Social Network for Soccer Lovers</string>
+
+    <string name="search_hint">Search player by name...</string>
+    <string name="search">Search</string>
+    <string name="clear_search">Clear search</string>
+
+    <string name="delete_dialog_title">Remove from favorites</string>
+    <string name="delete_dialog_message">Are you sure you want to remove %s from your list?</string>
+    <string name="delete">Remove</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="goals_stat">%d</string>
+    <string name="assists_stat">%d</string>
+    <string name="age_stat">%d years</string>
+    <string name="description">Description</string>
+    <string name="recent_comments">Recent comments</string>
+
+    <string name="profile_name_placeholder">User</string>
+    <string name="email_placeholder">email@example.com</string>
+    <string name="location_placeholder">City, Country</string>
+    <string name="favorite_team_placeholder">Favorite team</string>
+    <string name="member_since">Member since %s</string>
+    <string name="days_active">Days active</string>
+    <string name="friends">Friends</string>
+    <string name="achievement_fanatic">Fanatic</string>
+    <string name="achievement_commentator">Commentator</string>
+    <string name="achievement_active">Active</string>
+
+    <string name="logo_desc">%s Logo</string>
+    <string name="send_email">Send email with...</string>
+    <string name="send_email_desc">Send email icon</string>
+    <string name="contact">Contact</string>
+    <string name="email_contact">futconnect@gmail.com</string>
+    <string name="email_subject">Information Request</string>
+    <string name="email_body">Hello, I would like more information about the FutConnect app.</string>
+    <string name="warning">Warning</string>
+    <string name="add_favorites_hint">Add players to favorites by tapping the ❤️ icon in the player list</string>
+    <string name="remove_favorite_confirm">Remove %s from favorites?</string>
+
+    <string name="error">Error</string>
+    <string name="success">Success</string>
+    <string name="no_favorites_desc">No favorites</string>
+    <string name="fanatic">Fanatic</string>
+    <string name="commentator">Commentator</string>
+    <string name="active">Active</string>
+    <string name="profile_info">Profile information</string>
+    <string name="activity_futconnect">FutConnect Activity</string>
+    <string name="players">Players</string>
+    <string name="favorites">Favorites</string>
+    <string name="info">Information</string>
+    <string name="email">Email</string>
+    <string name="location">Location</string>
+    <string name="favorite_team">Favorite team</string>
+    <string name="comments_count">Comments</string>
 </resources>
