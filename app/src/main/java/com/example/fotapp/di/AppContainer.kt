@@ -3,12 +3,12 @@ package com.example.fotapp.di
 import android.content.Context
 import com.example.fotapp.data.local.AppDatabase
 import com.example.fotapp.data.network.ApiService
-import com.example.fotapp.data.network.MockInterceptor
 import com.example.fotapp.data.preferences.UserPreferencesRepository
 import com.example.fotapp.data.preferences.dataStore
 import com.example.fotapp.data.repository.OfflineFirstPlayerRepository
 import com.example.fotapp.data.repository.PlayerRepository
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -19,12 +19,16 @@ interface AppContainer {
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
 
+    private val loggingInterceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
+    }
+
     private val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(MockInterceptor())
+        .addInterceptor(loggingInterceptor)
         .build()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("https://mockapi.futconnect.com/") // Base URL ficticia
+        .baseUrl("https://api.npoint.io/") // API Real (JSON alojado en la nube)
         .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()

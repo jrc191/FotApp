@@ -47,7 +47,7 @@ fun PlayerCard(
         ) {
             // Imagen del jugador
             CircularAvatar(
-                drawable = Datasource.getDrawableIdByName(player.photo),
+                model = player.photo,
                 size = 80,
                 modifier = Modifier.weight(1f)
             )
@@ -137,7 +137,7 @@ fun PlayerCardLand(
                     modifier = Modifier.weight(1f)
                 ) {
                     CircularAvatar(
-                        drawable = Datasource.getDrawableIdByName(player.photo),
+                        model = player.photo,
                         size = 100,
                         modifier = Modifier.padding(end = 16.dp)
                     )
@@ -251,7 +251,7 @@ fun FavPlayerCard(
                 modifier = Modifier.weight(1f)
             ) {
                 CircularAvatar(
-                    drawable = Datasource.getDrawableIdByName(player.photo),
+                    model = player.photo,
                     size = 60
                 )
 

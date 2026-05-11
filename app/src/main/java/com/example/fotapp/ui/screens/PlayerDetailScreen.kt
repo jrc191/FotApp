@@ -1,6 +1,5 @@
 package com.example.fotapp.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -11,7 +10,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -19,6 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.fotapp.R
 import com.example.fotapp.data.Datasource
 import com.example.fotapp.data.Datasource.getFlagEmoji
@@ -122,8 +121,8 @@ fun PlayerDetailScreen(
                 player?.let {
                     // Imagen
                     Box(modifier = Modifier.fillMaxWidth().height(220.dp), contentAlignment = Alignment.Center) {
-                        Image(
-                            painter = painterResource(id = Datasource.getDrawableIdByName(it.photo)),
+                        AsyncImage(
+                            model = it.photo,
                             contentDescription = it.name,
                             modifier = Modifier.fillMaxWidth().height(200.dp),
                             contentScale = ContentScale.Fit

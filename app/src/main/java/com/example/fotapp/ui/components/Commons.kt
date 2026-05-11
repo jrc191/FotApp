@@ -18,111 +18,70 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.fotapp.R
 
-// Componente de imagen reutilizable
 @Composable
-fun FutImageComp(
-    modifier: Modifier = Modifier,
-    drawable: Int,
-    contentDescription: String = "",
-    contentScale: ContentScale = ContentScale.Crop,
-    height: Int = 0,
-    width: Int = 0
-) {
-    val contentDesc = contentDescription.ifEmpty { stringResource(R.string.default_content_descrip) }
-
-    if (height != 0 && width != 0) {
-        Image(
-            painter = painterResource(id = drawable),
-            contentDescription = contentDesc,
-            modifier = modifier
-                .height(height.dp)
-                .width(width.dp),
-            contentScale = contentScale
-        )
-    } else {
-        Image(
-            modifier = modifier,
-            painter = painterResource(id = drawable),
-            contentDescription = contentDesc,
-            contentScale = contentScale
+fun FutHeaderComp(title: String) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.primary,
+        shadowElevation = 4.dp
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.padding(16.dp),
+            fontWeight = FontWeight.Bold
         )
     }
 }
 
-// Componente de texto estándar
 @Composable
 fun FutTextComp(
     text: String,
+    style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.bodyLarge,
+    color: Color = Color.Unspecified,
     modifier: Modifier = Modifier,
-    style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.bodyMedium,
     maxLines: Int = Int.MAX_VALUE
 ) {
     Text(
-        modifier = modifier,
         text = text,
         style = style,
+        color = color,
+        modifier = modifier,
         maxLines = maxLines
     )
 }
 
-// Componente de botón
 @Composable
 fun FutButtonComp(
     label: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    icon: ImageVector? = null,
-    onClick: () -> Unit = {}
+    icon: ImageVector? = null
 ) {
     Button(
-        modifier = modifier.padding(horizontal = 8.dp),
         onClick = onClick,
-        enabled = enabled,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
-        )
+        modifier = modifier,
+        shape = MaterialTheme.shapes.medium
     ) {
         if (icon != null) {
             Icon(
                 imageVector = icon,
-                contentDescription = label,
+                contentDescription = null,
                 modifier = Modifier.size(20.dp)
             )
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(Modifier.width(8.dp))
         }
-        Text(text = label, style = MaterialTheme.typography.labelLarge)
+        Text(text = label)
     }
 }
 
-// Componente de cabecera
-@Composable
-fun FutHeaderComp(title: String, modifier: Modifier = Modifier) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.primary,
-        shadowElevation = 4.dp
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 20.dp),
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onPrimary  // Usar color de contraste
-            )
-        }
-    }
-}
-
-// Componente de tarjeta de estadísticas
 @Composable
 fun StatCard(
-    title: String,
+    label: String,
     value: String,
     icon: ImageVector,
     modifier: Modifier = Modifier
@@ -141,19 +100,20 @@ fun StatCard(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = title,
+                contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            FutTextComp(
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
                 text = value,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 4.dp)
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
             )
-            FutTextComp(
-                text = title,
-                style = MaterialTheme.typography.labelMedium
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -162,12 +122,12 @@ fun StatCard(
 // Componente de avatar circular
 @Composable
 fun CircularAvatar(
-    drawable: Int,
+    model: Any,
     size: Int = 56,
     modifier: Modifier = Modifier
 ) {
-    Image(
-        painter = painterResource(id = drawable),
+    AsyncImage(
+        model = model,
         contentDescription = stringResource(R.string.avatar_desc),
         modifier = modifier
             .size(size.dp)
