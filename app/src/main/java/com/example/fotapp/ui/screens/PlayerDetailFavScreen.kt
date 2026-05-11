@@ -24,6 +24,7 @@ import com.example.fotapp.R
 import com.example.fotapp.data.Datasource
 import com.example.fotapp.data.Datasource.getFlagEmoji
 import com.example.fotapp.ui.components.CommentItem
+import com.example.fotapp.ui.components.StarRating
 import com.example.fotapp.ui.components.StatCard
 import com.example.fotapp.ui.viewmodel.AppViewModelProvider
 import com.example.fotapp.ui.viewmodel.PlayerDetailViewModel
@@ -61,16 +62,19 @@ fun PlayerDetailFavScreen(
                         label = { Text("Comentario") },
                         modifier = Modifier.fillMaxWidth()
                     )
-                    Spacer(Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Rating: ")
-                        Slider(
-                            value = rating.toFloat(),
-                            onValueChange = { rating = it.toInt() },
-                            valueRange = 1f..5f,
-                            steps = 3
+                    Spacer(Modifier.height(16.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Rating: ", style = MaterialTheme.typography.titleMedium)
+                        Spacer(Modifier.width(8.dp))
+                        StarRating(
+                            rating = rating,
+                            onRatingChange = { rating = it },
+                            starSize = 32
                         )
-                        Text("$rating")
                     }
                 }
             },

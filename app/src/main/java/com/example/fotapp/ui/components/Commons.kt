@@ -1,6 +1,7 @@
 package com.example.fotapp.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -180,6 +181,8 @@ fun CircularAvatar(
 fun StarRating(
     rating: Int,
     maxRating: Int = 5,
+    onRatingChange: ((Int) -> Unit)? = null,
+    starSize: Int = 16,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
@@ -188,7 +191,15 @@ fun StarRating(
                 imageVector = if (i <= rating) Icons.Filled.Star else Icons.Filled.StarBorder,
                 contentDescription = stringResource(R.string.rating_hint, i),
                 tint = if (i <= rating) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.outline,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier
+                    .size(starSize.dp)
+                    .then(
+                        if (onRatingChange != null) {
+                            Modifier.clickable { onRatingChange(i) }
+                        } else {
+                            Modifier
+                        }
+                    )
             )
         }
     }
