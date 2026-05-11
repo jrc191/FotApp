@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.fotapp.R
 import com.example.fotapp.data.Datasource
@@ -27,60 +28,36 @@ import com.example.fotapp.model.Comment
 import com.example.fotapp.ui.components.FutButtonComp
 import com.example.fotapp.ui.components.StarRating
 import com.example.fotapp.ui.components.StatCard
+import com.example.fotapp.ui.viewmodel.AppViewModelProvider
+import com.example.fotapp.ui.viewmodel.PlayerDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerDetailCompactScreen(
+fun PlayerDetailScreen(
     playerName: String,
-    isFavoriteInitial: Boolean,
     navController: NavController,
-    onFavoriteClick: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: PlayerDetailViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    // Buscar por nombre
-    val player = remember(playerName) { Datasource.getPlayerByName(playerName) }
-
-    val isFavorite = remember { mutableStateOf(isFavoriteInitial) }
-
-    // Diálogo de confirmación
-    var showDeleteDialog by remember { mutableStateOf(false) }
-
-    LaunchedEffect(isFavoriteInitial) {
-        isFavorite.value = isFavoriteInitial
+    LaunchedEffect(playerName) {
+        viewModel.loadPlayer(playerName)
     }
 
-    val sampleComments = remember {
-        listOf(
-            Comment(1, player?.id ?: 0, "Juan Pérez", "¡Excelente jugador!", "2024-01-15", 5),
-            Comment(2, player?.id ?: 0, "Ana Gómez", "Técnica impresionante.", "2024-01-10", 4),
-            Comment(3, player?.id ?: 0, "Carlos Ruiz", "Un crack total.", "2024-01-05", 5)
-        )
-    }
+    val uiState by viewModel.uiState.collectAsState()
+    val player = uiState.player
+    val isFavorite = uiState.isFavorite
+    val comments = uiState.comments
 
-    // Diálogo de confirmación para eliminar favorito
-    if (showDeleteDialog) {
+    var showAlreadyFavoriteMessage by remember { mutableStateOf(false) }
+
+    if (showAlreadyFavoriteMessage) {
         AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = { Text(stringResource(R.string.delete_dialog_title)) },
-            text = {
-                Text(
-                    stringResource(R.string.remove_favorite_confirm, player?.name ?: "")
-                )
-            },
+            onDismissRequest = { showAlreadyFavoriteMessage = false },
+            title = { Text("Aviso") },
+            text = { Text("El elemento ya está guardado como favorito.") },
             confirmButton = {
-                TextButton(onClick = {
-                    showDeleteDialog = false
-                    onFavoriteClick(false)
-                }) {
-                    Text(
-                        stringResource(R.string.delete),
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) {
-                    Text(stringResource(R.string.cancel))
+                TextButton(onClick = { showAlreadyFavoriteMessage = false }) {
+                    Text("OK")
                 }
             }
         )
@@ -114,30 +91,28 @@ fun PlayerDetailCompactScreen(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {
-                    if (isFavorite.value) {
-                        // Si ya es favorito, mostrar diálogo de confirmación
-                        showDeleteDialog = true
+                    if (isFavorite) {
+                        showAlreadyFavoriteMessage = true
                     } else {
-                        // Si no es favorito, añadir directamente
-                        onFavoriteClick(true)
+                        viewModel.toggleFavorite()
                     }
                 },
                 icon = {
                     Icon(
-                        imageVector = if (isFavorite.value) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                         contentDescription = stringResource(R.string.favorite_desc)
                     )
                 },
                 text = {
                     Text(
-                        text = if (isFavorite.value)
-                            stringResource(R.string.remove_from_favorites)
+                        text = if (isFavorite)
+                            "Guardado"
                         else
                             stringResource(R.string.add_to_favorites)
                     )
                 },
-                containerColor = if (isFavorite.value) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary,
-                contentColor = if (isFavorite.value) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onSecondary,
+                containerColor = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary,
+                contentColor = if (isFavorite) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onSecondary,
                 modifier = Modifier.padding(16.dp)
             )
         }
@@ -213,8 +188,8 @@ fun PlayerDetailCompactScreen(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        if (sampleComments.isNotEmpty()) {
-                            sampleComments.forEach { c ->
+                        if (comments.isNotEmpty()) {
+                            comments.forEach { c ->
                                 CommentItemEnhanced(c)
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
@@ -321,63 +296,6 @@ fun CommentItemEnhanced(comment: Comment) {
                 style = MaterialTheme.typography.bodyMedium,
                 lineHeight = MaterialTheme.typography.bodyMedium.lineHeight.times(1.2),
                 color = MaterialTheme.colorScheme.onSurface
-            )
-        }
-    }
-}
-
-// Original
-@Composable
-fun CommentItem(comment: Comment) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Surface(
-                    shape = CircleShape,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(32.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(
-                            text = comment.userName.take(1).uppercase(),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Text(
-                    text = comment.userName,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                StarRating(rating = comment.rating, modifier = Modifier.scale(0.8f))
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = comment.text,
-                style = MaterialTheme.typography.bodyMedium
             )
         }
     }

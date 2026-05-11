@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FutConnect</string>
+    <string name="app_name" translatable="false">FutConnect</string>
     <string name="version">Version: 1.0.0</string>
 
     <string name="default_content_descrip">Image content</string>

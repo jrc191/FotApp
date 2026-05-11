@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Comment
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,23 +16,67 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.fotapp.R
 import com.example.fotapp.ui.components.FutButtonComp
 import com.example.fotapp.ui.components.StatCard
+import com.example.fotapp.ui.viewmodel.AppViewModelProvider
+import com.example.fotapp.ui.viewmodel.FavoriteViewModel
+import com.example.fotapp.ui.viewmodel.ProfileViewModel
+
+@Composable
+fun ProfileScreen(
+    windowSize: WindowWidthSizeClass,
+    navController: NavController,
+    viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    favViewModel: FavoriteViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
+    val userName by viewModel.userName.collectAsState()
+    val isDarkMode by viewModel.isDarkMode.collectAsState()
+    val favoritePlayers by favViewModel.favoritePlayers.collectAsState()
+    val favCount = favoritePlayers.size
+
+    if (windowSize == WindowWidthSizeClass.Compact) {
+        ProfileCompactScreen(
+            userName = userName,
+            isDarkMode = isDarkMode,
+            favCount = favCount,
+            onNameChange = { viewModel.saveUserName(it) },
+            onThemeChange = { viewModel.toggleDarkMode(it) },
+            onAboutClick = { navController.navigate("about") }
+        )
+    } else {
+        ProfileMedExpScreen(
+            userName = userName,
+            isDarkMode = isDarkMode,
+            favCount = favCount,
+            onNameChange = { viewModel.saveUserName(it) },
+            onThemeChange = { viewModel.toggleDarkMode(it) },
+            onAboutClick = { navController.navigate("about") }
+        )
+    }
+}
 
 // --- PANTALLA VERTICAL (MÓVIL NORMAL) ---
 @Composable
 fun ProfileCompactScreen(
-    modifier: Modifier = Modifier,
+    userName: String,
+    isDarkMode: Boolean,
     favCount: Int,
+    onNameChange: (String) -> Unit,
+    onThemeChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
     onAboutClick: () -> Unit = {}
 ) {
-    var profileName by remember { mutableStateOf("JoseRC") }
     var isLogged by remember { mutableStateOf(true) }
     var email by remember { mutableStateOf("fan@futconnect.com") }
     var location by remember { mutableStateOf("Huelva, España") }
     var favoriteTeam by remember { mutableStateOf("FC Barcelona") }
     var memberSince by remember { mutableStateOf("2023") }
+
+    var isEditingName by remember { mutableStateOf(false) }
+    var editNameText by remember { mutableStateOf(userName) }
 
     Column(
         modifier = modifier
@@ -58,7 +103,7 @@ fun ProfileCompactScreen(
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Text(
-                            text = "JR",
+                            text = userName.take(2).uppercase(),
                             style = MaterialTheme.typography.displaySmall,
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Bold
@@ -66,11 +111,38 @@ fun ProfileCompactScreen(
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = profileName,
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                
+                if (isEditingName) {
+                    OutlinedTextField(
+                        value = editNameText,
+                        onValueChange = { editNameText = it },
+                        label = { Text("Nombre") },
+                        singleLine = true,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    Row {
+                        TextButton(onClick = { isEditingName = false }) { Text("Cancelar") }
+                        Button(onClick = {
+                            onNameChange(editNameText)
+                            isEditingName = false
+                        }) { Text("Guardar") }
+                    }
+                } else {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = userName,
+                            style = MaterialTheme.typography.headlineLarge,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        IconButton(onClick = { 
+                            editNameText = userName
+                            isEditingName = true 
+                        }) {
+                            Icon(Icons.Default.Edit, contentDescription = "Editar nombre", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                        }
+                    }
+                }
+                
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = stringResource(R.string.member_since, memberSince),
@@ -90,10 +162,28 @@ fun ProfileCompactScreen(
             OutlinedCard(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
                     Text(
-                        text = stringResource(R.string.personal_info),
+                        text = "Configuración",
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Modo Oscuro", style = MaterialTheme.typography.bodyLarge)
+                        Switch(
+                            checked = isDarkMode,
+                            onCheckedChange = { onThemeChange(it) }
+                        )
+                    }
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                    Text(
+                        text = stringResource(R.string.personal_info),
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 12.dp, top = 8.dp)
                     )
                     ProfileInfoRow(
                         Icons.Default.Email,
@@ -168,6 +258,7 @@ fun ProfileCompactScreen(
                     Text(stringResource(R.string.about))
                 }
             }
+            Spacer(modifier = Modifier.height(64.dp))
         }
     }
 }
@@ -175,16 +266,22 @@ fun ProfileCompactScreen(
 // --- PANTALLA HORIZONTAL (LANDSCAPE) ---
 @Composable
 fun ProfileMedExpScreen(
-    modifier: Modifier = Modifier,
+    userName: String,
+    isDarkMode: Boolean,
     favCount: Int,
+    onNameChange: (String) -> Unit,
+    onThemeChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
     onAboutClick: () -> Unit = {}
 ) {
-    var profileName by remember { mutableStateOf("JoseRC") }
     var isLogged by remember { mutableStateOf(true) }
     var email by remember { mutableStateOf("fan@futconnect.com") }
     var location by remember { mutableStateOf("Huelva, España") }
     var favoriteTeam by remember { mutableStateOf("FC Barcelona") }
     var memberSince by remember { mutableStateOf("2023") }
+
+    var isEditingName by remember { mutableStateOf(false) }
+    var editNameText by remember { mutableStateOf(userName) }
 
     BoxWithConstraints(
         modifier = modifier.fillMaxSize()
@@ -224,7 +321,7 @@ fun ProfileMedExpScreen(
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Text(
-                                    text = "JR",
+                                    text = userName.take(2).uppercase(),
                                     style = MaterialTheme.typography.displayMedium,
                                     color = MaterialTheme.colorScheme.onPrimary,
                                     fontWeight = FontWeight.Bold
@@ -233,12 +330,38 @@ fun ProfileMedExpScreen(
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = profileName,
-                                style = MaterialTheme.typography.headlineMedium,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                textAlign = TextAlign.Center
-                            )
+                            
+                            if (isEditingName) {
+                                OutlinedTextField(
+                                    value = editNameText,
+                                    onValueChange = { editNameText = it },
+                                    label = { Text("Nombre") },
+                                    singleLine = true,
+                                )
+                                Row {
+                                    TextButton(onClick = { isEditingName = false }) { Text("Cancelar") }
+                                    Button(onClick = {
+                                        onNameChange(editNameText)
+                                        isEditingName = false
+                                    }) { Text("Guardar") }
+                                }
+                            } else {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = userName,
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        textAlign = TextAlign.Center
+                                    )
+                                    IconButton(onClick = { 
+                                        editNameText = userName
+                                        isEditingName = true 
+                                    }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                                    }
+                                }
+                            }
+
                             Text(
                                 text = stringResource(R.string.member_since, memberSince),
                                 style = MaterialTheme.typography.bodyMedium,
@@ -293,6 +416,25 @@ fun ProfileMedExpScreen(
                             modifier = Modifier.fillMaxWidth().padding(24.dp)
                         ) {
                             Text(
+                                text = "Configuración",
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(bottom = 20.dp)
+                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text("Modo Oscuro", style = MaterialTheme.typography.bodyLarge)
+                                Switch(
+                                    checked = isDarkMode,
+                                    onCheckedChange = { onThemeChange(it) }
+                                )
+                            }
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+                            Text(
                                 text = stringResource(R.string.profile_info),
                                 style = MaterialTheme.typography.headlineSmall,
                                 color = MaterialTheme.colorScheme.primary,
@@ -303,7 +445,7 @@ fun ProfileMedExpScreen(
                                 ProfileInfoRowLand(
                                     Icons.Default.Person,
                                     stringResource(R.string.profile_name_placeholder),
-                                    profileName
+                                    userName
                                 )
                                 ProfileInfoRowLand(
                                     Icons.Default.Email,
@@ -396,6 +538,7 @@ fun ProfileMedExpScreen(
                         }
                     }
                     Spacer(modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier.height(40.dp))
                 }
             }
         }

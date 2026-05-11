@@ -4,10 +4,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,12 +17,38 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.fotapp.R
 import com.example.fotapp.model.Player
 import com.example.fotapp.ui.components.FavPlayerCard
 import com.example.fotapp.ui.components.FutHeaderComp
+import com.example.fotapp.ui.viewmodel.AppViewModelProvider
+import com.example.fotapp.ui.viewmodel.FavoriteViewModel
 
+
+@Composable
+fun FavListScreen(
+    windowSize: WindowWidthSizeClass,
+    navController: NavController,
+    viewModel: FavoriteViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
+    val favoritePlayers by viewModel.favoritePlayers.collectAsState()
+
+    if (windowSize == WindowWidthSizeClass.Compact) {
+        FavListCompactScreen(
+            favoritePlayers = favoritePlayers,
+            navController = navController,
+            onRemoveFavorite = { viewModel.removeFavorite(it) }
+        )
+    } else {
+        FavListMedExpScreen(
+            favoritePlayers = favoritePlayers,
+            navController = navController,
+            onRemoveFavorite = { viewModel.removeFavorite(it) }
+        )
+    }
+}
 
 @Composable
 fun DeleteConfirmDialog(
@@ -75,7 +101,7 @@ fun FavListCompactScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp)
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 80.dp)
             ) {
                 items(favoritePlayers) { player ->
                     FavPlayerCard(
@@ -117,7 +143,7 @@ fun FavListMedExpScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(24.dp)
+                contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 80.dp)
             ) {
                 items(favoritePlayers.chunked(2)) { rowPlayers ->
                     Row(

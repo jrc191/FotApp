@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.fotapp.R
 import com.example.fotapp.data.Datasource
@@ -26,55 +27,72 @@ import com.example.fotapp.data.Datasource.getFlagEmoji
 import com.example.fotapp.model.Comment
 import com.example.fotapp.ui.components.StatCard
 import com.example.fotapp.ui.components.StarRating
+import com.example.fotapp.ui.viewmodel.AppViewModelProvider
+import com.example.fotapp.ui.viewmodel.PlayerDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerDetailFavCompactScreen(
+fun PlayerDetailFavScreen(
     playerName: String,
     navController: NavController,
-    onRemoveFavorite: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: PlayerDetailViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val player = remember(playerName) { Datasource.getPlayerByName(playerName) }
+    LaunchedEffect(playerName) {
+        viewModel.loadPlayer(playerName)
+    }
 
-    // Diálogo de confirmación
-    var showDeleteDialog by remember { mutableStateOf(false) }
+    val uiState by viewModel.uiState.collectAsState()
+    val player = uiState.player
+    val comments = uiState.comments
 
-    if (showDeleteDialog) {
+    // Diálogo de añadir comentario
+    var showCommentDialog by remember { mutableStateOf(false) }
+    var commentText by remember { mutableStateOf("") }
+    var rating by remember { mutableStateOf(5) }
+
+    if (showCommentDialog) {
         AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = { Text(stringResource(R.string.delete_dialog_title)) },
+            onDismissRequest = { showCommentDialog = false },
+            title = { Text("Añadir comentario") },
             text = {
-                Text(
-                    stringResource(R.string.remove_favorite_confirm, player?.name ?: "")
-                )
+                Column {
+                    OutlinedTextField(
+                        value = commentText,
+                        onValueChange = { commentText = it },
+                        label = { Text("Comentario") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Rating: ")
+                        Slider(
+                            value = rating.toFloat(),
+                            onValueChange = { rating = it.toInt() },
+                            valueRange = 1f..5f,
+                            steps = 3
+                        )
+                        Text("$rating")
+                    }
+                }
             },
             confirmButton = {
                 TextButton(onClick = {
-                    showDeleteDialog = false
-                    onRemoveFavorite()
+                    if (commentText.isNotBlank()) {
+                        viewModel.addComment(commentText, rating)
+                    }
+                    showCommentDialog = false
+                    commentText = ""
+                    rating = 5
                 }) {
-                    Text(
-                        stringResource(R.string.delete),
-                        color = MaterialTheme.colorScheme.error
-                    )
+                    Text("Añadir")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) {
+                TextButton(onClick = { showCommentDialog = false }) {
                     Text(stringResource(R.string.cancel))
                 }
             }
-        )
-    }
-
-    // Datos dummy favoritos
-    val sampleComments = remember {
-        listOf(
-            Comment(1, player?.id ?: 0, "Fan #1", "¡En mis favoritos por siempre!", "2024-01-15", 5),
-            Comment(2, player?.id ?: 0, "UltraFan", "El mejor del mundo. Siempre en mi corazón.", "2024-01-10", 5),
-            Comment(3, player?.id ?: 0, "SuperFan", "No hay partido que me pierda de este crack.", "2024-01-08", 4),
-            Comment(4, player?.id ?: 0, "TrueFan", "Colección completa de sus camisetas.", "2024-01-05", 5)
         )
     }
 
@@ -109,25 +127,26 @@ fun PlayerDetailFavCompactScreen(
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = { showDeleteDialog = true },
+                onClick = { showCommentDialog = true },
                 icon = {
                     Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = stringResource(R.string.delete)
+                        imageVector = Icons.Default.AddComment,
+                        contentDescription = "Añadir comentario"
                     )
                 },
                 text = {
-                    Text(stringResource(R.string.remove_from_favorites))
+                    Text("Comentar")
                 },
-                containerColor = MaterialTheme.colorScheme.error,
-                contentColor = MaterialTheme.colorScheme.onError,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.padding(16.dp)
             )
         }
     ) { innerPadding ->
         LazyColumn(
             modifier = modifier.padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            contentPadding = PaddingValues(bottom = 100.dp)
         ) {
             item {
                 player?.let {
@@ -260,8 +279,8 @@ fun PlayerDetailFavCompactScreen(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        if (sampleComments.isNotEmpty()) {
-                            sampleComments.forEach { c ->
+                        if (comments.isNotEmpty()) {
+                            comments.forEach { c ->
                                 CommentItemFav(c)
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
