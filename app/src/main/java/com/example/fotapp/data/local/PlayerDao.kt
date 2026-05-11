@@ -21,6 +21,9 @@ interface PlayerDao {
     @Query("SELECT * FROM comments WHERE playerId = :playerId")
     fun getCommentsForPlayer(playerId: Int): Flow<List<CommentEntity>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertComment(comment: CommentEntity)
+
+    @Delete
+    suspend fun deleteComment(comment: CommentEntity)
 }

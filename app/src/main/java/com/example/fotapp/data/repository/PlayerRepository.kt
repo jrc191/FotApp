@@ -15,6 +15,8 @@ interface PlayerRepository {
     suspend fun removePlayerFromFavorites(player: Player)
     fun getCommentsForPlayer(playerId: Int): Flow<List<Comment>>
     suspend fun addComment(comment: Comment)
+    suspend fun updateComment(comment: Comment)
+    suspend fun deleteComment(comment: Comment)
 }
 
 class OfflineFirstPlayerRepository(
@@ -48,5 +50,13 @@ class OfflineFirstPlayerRepository(
 
     override suspend fun addComment(comment: Comment) {
         playerDao.insertComment(comment.toEntity())
+    }
+
+    override suspend fun updateComment(comment: Comment) {
+        playerDao.insertComment(comment.toEntity())
+    }
+
+    override suspend fun deleteComment(comment: Comment) {
+        playerDao.deleteComment(comment.toEntity())
     }
 }

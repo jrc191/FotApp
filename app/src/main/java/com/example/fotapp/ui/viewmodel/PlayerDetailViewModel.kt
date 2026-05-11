@@ -91,4 +91,17 @@ class PlayerDetailViewModel(
             repository.addComment(comment)
         }
     }
+
+    fun updateComment(comment: Comment, newText: String, newRating: Int) {
+        viewModelScope.launch {
+            val updatedComment = comment.copy(text = newText, rating = newRating)
+            repository.updateComment(updatedComment)
+        }
+    }
+
+    fun deleteComment(comment: Comment) {
+        viewModelScope.launch {
+            repository.deleteComment(comment)
+        }
+    }
 }

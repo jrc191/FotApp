@@ -18,15 +18,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.fotapp.R
 import com.example.fotapp.data.Datasource
 import com.example.fotapp.data.Datasource.getFlagEmoji
-import com.example.fotapp.model.Comment
+import com.example.fotapp.ui.components.CommentItem
 import com.example.fotapp.ui.components.StatCard
-import com.example.fotapp.ui.components.StarRating
 import com.example.fotapp.ui.viewmodel.AppViewModelProvider
 import com.example.fotapp.ui.viewmodel.PlayerDetailViewModel
 
@@ -198,8 +196,7 @@ fun PlayerDetailFavScreen(
                         )
                         Text(
                             "${getFlagEmoji(it.nationality)} ${it.nationality} • ${stringResource(R.string.age_stat, it.age)}",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
+                            style = MaterialTheme.typography.bodyLarge)
                     }
 
                     // Stats
@@ -281,7 +278,13 @@ fun PlayerDetailFavScreen(
 
                         if (comments.isNotEmpty()) {
                             comments.forEach { c ->
-                                CommentItemFav(c)
+                                CommentItem(
+                                    comment = c,
+                                    currentUserName = uiState.userName,
+                                    onDelete = { viewModel.deleteComment(it) },
+                                    onEdit = { comment, text, rating -> viewModel.updateComment(comment, text, rating) },
+                                    showFanBadge = true
+                                )
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
                         } else {
@@ -318,91 +321,6 @@ fun PlayerDetailFavScreen(
                     }
                 }
             }
-        }
-    }
-}
-
-// Comentario con badge FAN
-@Composable
-fun CommentItemFav(comment: Comment) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Avatar del usuario con badge de fan
-                Box {
-                    Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        modifier = Modifier.size(40.dp)
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Text(
-                                text = comment.userName.take(2).uppercase(),
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-
-                    // Badge de fan
-                    Badge(
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .offset(x = 8.dp, y = (-4).dp),
-                        containerColor = MaterialTheme.colorScheme.error
-                    ) {
-                        Text(
-                            stringResource(R.string.fan_badge),
-                            style = MaterialTheme.typography.labelSmall,
-                            fontSize = 8.sp
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = comment.userName,
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    Text(
-                        text = comment.date,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
-                // Rating con estrellas
-                StarRating(rating = comment.rating)
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = comment.text,
-                style = MaterialTheme.typography.bodyMedium,
-                lineHeight = MaterialTheme.typography.bodyMedium.lineHeight.times(1.2),
-                color = MaterialTheme.colorScheme.onSurface
-            )
         }
     }
 }

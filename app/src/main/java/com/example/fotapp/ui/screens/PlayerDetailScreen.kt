@@ -3,7 +3,6 @@ package com.example.fotapp.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
@@ -11,7 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -24,9 +22,7 @@ import androidx.navigation.NavController
 import com.example.fotapp.R
 import com.example.fotapp.data.Datasource
 import com.example.fotapp.data.Datasource.getFlagEmoji
-import com.example.fotapp.model.Comment
-import com.example.fotapp.ui.components.FutButtonComp
-import com.example.fotapp.ui.components.StarRating
+import com.example.fotapp.ui.components.CommentItem
 import com.example.fotapp.ui.components.StatCard
 import com.example.fotapp.ui.viewmodel.AppViewModelProvider
 import com.example.fotapp.ui.viewmodel.PlayerDetailViewModel
@@ -190,7 +186,12 @@ fun PlayerDetailScreen(
 
                         if (comments.isNotEmpty()) {
                             comments.forEach { c ->
-                                CommentItemEnhanced(c)
+                                CommentItem(
+                                    comment = c,
+                                    currentUserName = uiState.userName,
+                                    onDelete = { viewModel.deleteComment(it) },
+                                    onEdit = { comment, text, rating -> viewModel.updateComment(comment, text, rating) }
+                                )
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
                         } else {
@@ -226,77 +227,6 @@ fun PlayerDetailScreen(
                     }
                 }
             }
-        }
-    }
-}
-
-// Comentario mejorado
-@Composable
-fun CommentItemEnhanced(comment: Comment) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Avatar del usuario
-                Box {
-                    Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        modifier = Modifier.size(40.dp)
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Text(
-                                text = comment.userName.take(2).uppercase(),
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = comment.userName,
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    Text(
-                        text = comment.date,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
-                // Rating con estrellas
-                StarRating(rating = comment.rating)
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = comment.text,
-                style = MaterialTheme.typography.bodyMedium,
-                lineHeight = MaterialTheme.typography.bodyMedium.lineHeight.times(1.2),
-                color = MaterialTheme.colorScheme.onSurface
-            )
         }
     }
 }
