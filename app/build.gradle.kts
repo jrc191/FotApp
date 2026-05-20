@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -17,8 +19,23 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        val properties = Properties()
+        val propertiesFile = project.rootProject.file("local.properties")
+        if (propertiesFile.exists()) {
+            propertiesFile.inputStream().use { properties.load(it) }
+        }
+        
+        buildConfigField("String", "FOOTBALL_API_KEY", "\"${properties.getProperty("FOOTBALL_API_KEY") ?: ""}\"")
+        buildConfigField("String", "API_FOOTBALL_KEY", "\"${properties.getProperty("API_FOOTBALL_KEY") ?: ""}\"")
+        buildConfigField("String", "RAPIDAPI_KEY", "\"${properties.getProperty("RAPIDAPI_KEY") ?: ""}\"")
     }
 
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+    
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -70,7 +87,8 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     // Coil (Image loading)
-    implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
 
     // Corrutinas
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")

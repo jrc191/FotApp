@@ -35,9 +35,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val mainViewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory)
-            val isDarkMode by mainViewModel.isDarkMode.collectAsState()
+            val themeMode by mainViewModel.themeMode.collectAsState()
             
-            FotAppTheme(darkTheme = isDarkMode) {
+            val darkTheme = when (themeMode) {
+                com.example.fotapp.data.preferences.UserPreferencesRepository.THEME_LIGHT -> false
+                com.example.fotapp.data.preferences.UserPreferencesRepository.THEME_DARK -> true
+                else -> isSystemInDarkTheme()
+            }
+            
+            FotAppTheme(darkTheme = darkTheme) {
                 FutConnectApp()
             }
         }

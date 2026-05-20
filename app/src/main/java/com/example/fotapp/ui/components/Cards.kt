@@ -6,21 +6,17 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fotapp.R
-import com.example.fotapp.data.Datasource
 import com.example.fotapp.model.Player
 
-// Tarjeta de jugador vertical
+// ── Tarjeta compacta (solo nombre + equipo) ───────────────────────────────
 @Composable
 fun PlayerCard(
     player: Player,
@@ -30,83 +26,63 @@ fun PlayerCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 6.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Imagen del jugador
+            // Avatar
             CircularAvatar(
                 model = player.photo,
-                size = 80,
-                modifier = Modifier.weight(1f)
+                size = 56
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
-            // Información del jugador
-            Column(
-                modifier = Modifier.weight(2f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                FutTextComp(
+            // Nombre + equipo
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
                     text = player.name,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.fillMaxWidth()
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1
                 )
-
-                FutTextComp(
-                    text = "${player.position} • ${player.team}",
-                    style = MaterialTheme.typography.bodyMedium
+                Text(
+                    text = player.team,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1
                 )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    FutTextComp(
-                        text = stringResource(R.string.goals_template, player.goals),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    FutTextComp(
-                        text = stringResource(R.string.age_template, player.age),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
-
-            // Botón de favoritos
+            // Botón favorito
             IconButton(
                 onClick = {
-                    Log.d("PlayerCard", "Favorito clickeado para ${player.name}")
+                    Log.d("PlayerCard", "Favorito: ${player.name}")
                     onFavoriteClick()
                 },
-                modifier = Modifier.size(48.dp)
+                modifier = Modifier.size(40.dp)
             ) {
                 Icon(
                     imageVector = if (player.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                     contentDescription = stringResource(R.string.favorite_desc),
-                    tint = if (player.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(32.dp)
+                    tint = if (player.isFavorite) MaterialTheme.colorScheme.error
+                           else MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }
     }
 }
 
-// Tarjeta de jugador horizontal
+// ── Tarjeta horizontal para tablets/landscape (también solo nombre + equipo) ──
 @Composable
 fun PlayerCardLand(
     player: Player,
@@ -116,113 +92,65 @@ fun PlayerCardLand(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 12.dp)
+            .padding(horizontal = 24.dp, vertical = 8.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp)
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Información principal
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    CircularAvatar(
-                        model = player.photo,
-                        size = 100,
-                        modifier = Modifier.padding(end = 16.dp)
-                    )
+            CircularAvatar(
+                model = player.photo,
+                size = 72,
+                modifier = Modifier.padding(end = 16.dp)
+            )
 
-                    Column {
-                        FutTextComp(
-                            text = player.name,
-                            style = MaterialTheme.typography.headlineSmall
-                        )
-                        FutTextComp(
-                            text = "${player.position} • ${player.team}",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
-                }
-
-                // Estadísticas
-                Row(
-                    modifier = Modifier.weight(1f),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        FutTextComp(
-                            text = player.goals.toString(),
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                        FutTextComp(
-                            text = stringResource(R.string.goals),
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                    }
-
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        FutTextComp(
-                            text = player.assists.toString(),
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                        FutTextComp(
-                            text = stringResource(R.string.assists),
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                    }
-
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        FutTextComp(
-                            text = player.age.toString(),
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                        FutTextComp(
-                            text = stringResource(R.string.age),
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                    }
-                }
-
-                // Botón de favoritos
-                IconButton(
-                    onClick = {
-                        Log.d("PlayerCardLand", "Favorito clickeado para ${player.name}")
-                        onFavoriteClick()
-                    },
-                    modifier = Modifier.size(56.dp)
-                ) {
-                    Icon(
-                        imageVector = if (player.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                        contentDescription = stringResource(R.string.favorite_desc),
-                        tint = if (player.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(40.dp)
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = player.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1
+                )
+                Text(
+                    text = player.team,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1
+                )
+                if (player.position != null) {
+                    Text(
+                        text = player.position,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
 
-            // Descripción
-            Spacer(modifier = Modifier.height(12.dp))
-            FutTextComp(
-                text = player.description,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 8.dp),
-                maxLines = 2
-            )
+            IconButton(
+                onClick = {
+                    Log.d("PlayerCardLand", "Favorito: ${player.name}")
+                    onFavoriteClick()
+                },
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = if (player.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    contentDescription = stringResource(R.string.favorite_desc),
+                    tint = if (player.isFavorite) MaterialTheme.colorScheme.error
+                           else MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
         }
     }
 }
 
-// Tarjeta de jugador favorito
+// ── Tarjeta de favorito ───────────────────────────────────────────────────
 @Composable
 fun FavPlayerCard(
     player: Player,
@@ -243,38 +171,31 @@ fun FavPlayerCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.weight(1f)
             ) {
-                CircularAvatar(
-                    model = player.photo,
-                    size = 60
-                )
-
+                CircularAvatar(model = player.photo, size = 60)
                 Spacer(modifier = Modifier.width(16.dp))
-
                 Column {
-                    FutTextComp(
+                    Text(
                         text = player.name,
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
                     )
-                    FutTextComp(
+                    Text(
                         text = player.team,
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 }
             }
-
-            IconButton(
-                onClick = {
-                    Log.d("FavPlayerCard", "Eliminar de favoritos: ${player.name}")
-                    onRemoveClick()
-                }
-            ) {
+            IconButton(onClick = {
+                Log.d("FavPlayerCard", "Eliminar: ${player.name}")
+                onRemoveClick()
+            }) {
                 Icon(
                     imageVector = Icons.Filled.Delete,
                     contentDescription = stringResource(R.string.remove_favorite_desc),

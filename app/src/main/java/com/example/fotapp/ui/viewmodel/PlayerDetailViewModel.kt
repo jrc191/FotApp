@@ -20,7 +20,9 @@ data class PlayerDetailUiState(
     val player: Player? = null,
     val comments: List<Comment> = emptyList(),
     val isFavorite: Boolean = false,
-    val userName: String = ""
+    val userName: String = "",
+    val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false
 )
 
 class PlayerDetailViewModel(
@@ -34,24 +36,29 @@ class PlayerDetailViewModel(
     private var currentPlayerName: String = ""
 
     fun loadPlayer(name: String) {
+        if (currentPlayerName == name && _uiState.value.player != null) return
         currentPlayerName = name
+
         viewModelScope.launch {
-            // Find player from API list since we don't have getPlayerByName in API
-            val players = repository.getPlayersFromApi()
-            val player = players.find { it.name.equals(name, ignoreCase = true) }
-            
+            _uiState.update { it.copy(isLoading = true, player = null) }
+
             val currentUser = preferencesRepository.userName.first()
-            _uiState.update { it.copy(player = player, userName = currentUser) }
+
+            // La caché de 24h está gestionada en el repositorio:
+            // solo llama a la API si los datos son viejos o no existen.
+            val player = repository.getPlayerDetailedStats(name, forceRefresh = false)
+
+            _uiState.update { it.copy(player = player, userName = currentUser, isLoading = false) }
 
             if (player != null) {
-                // Check if favorite and get comments
+                // Observar favoritos en tiempo real
                 launch {
                     repository.getFavoritePlayersStream().collect { favs ->
                         val isFav = favs.any { it.id == player.id }
                         _uiState.update { state -> state.copy(isFavorite = isFav) }
                     }
                 }
-                
+                // Observar comentarios en tiempo real
                 launch {
                     repository.getCommentsForPlayer(player.id).collect { comments ->
                         _uiState.update { state -> state.copy(comments = comments) }
@@ -61,12 +68,25 @@ class PlayerDetailViewModel(
         }
     }
 
+    /** Fuerza actualización desde la API ignorando la caché */
+    fun refreshStats() {
+        val player = _uiState.value.player ?: return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isRefreshing = true) }
+            val updated = repository.refreshPlayerStats(player)
+            _uiState.update {
+                it.copy(
+                    player = updated ?: it.player,
+                    isRefreshing = false
+                )
+            }
+        }
+    }
+
     fun toggleFavorite() {
         val player = _uiState.value.player ?: return
         viewModelScope.launch {
             if (_uiState.value.isFavorite) {
-                // In details, if you click the heart, you might want to delete it or just keep it.
-                // The requirement doesn't specify strictly for detail, but we can do it.
                 repository.removePlayerFromFavorites(player)
             } else {
                 repository.savePlayerToFavorites(player)
@@ -78,30 +98,20 @@ class PlayerDetailViewModel(
         val player = _uiState.value.player ?: return
         val userName = _uiState.value.userName
         val date = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
-        
         viewModelScope.launch {
-            val comment = Comment(
-                id = 0,
-                playerId = player.id,
-                userName = userName,
-                text = text,
-                date = date,
-                rating = rating
+            repository.addComment(
+                Comment(id = 0, playerId = player.id, userName = userName, text = text, date = date, rating = rating)
             )
-            repository.addComment(comment)
         }
     }
 
     fun updateComment(comment: Comment, newText: String, newRating: Int) {
         viewModelScope.launch {
-            val updatedComment = comment.copy(text = newText, rating = newRating)
-            repository.updateComment(updatedComment)
+            repository.updateComment(comment.copy(text = newText, rating = newRating))
         }
     }
 
     fun deleteComment(comment: Comment) {
-        viewModelScope.launch {
-            repository.deleteComment(comment)
-        }
+        viewModelScope.launch { repository.deleteComment(comment) }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.fotapp.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -29,30 +30,76 @@ import com.example.fotapp.ui.viewmodel.ProfileViewModel
 fun ProfileScreen(
     windowSize: WindowWidthSizeClass,
     navController: NavController,
-    viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    favViewModel: FavoriteViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val userName by viewModel.userName.collectAsState()
-    val isDarkMode by viewModel.isDarkMode.collectAsState()
-    val favoritePlayers by favViewModel.favoritePlayers.collectAsState()
-    val favCount = favoritePlayers.size
+    val themeMode by viewModel.themeMode.collectAsState()
+    val isLoggedIn by viewModel.isLoggedIn.collectAsState()
+    val favCount by viewModel.favoritesCount.collectAsState()
+    val commCount by viewModel.commentsCount.collectAsState()
+    val allComments by viewModel.allComments.collectAsState()
+    val memberSince by viewModel.memberSince.collectAsState()
+
+    var loginName by remember { mutableStateOf("") }
+
+    if (!isLoggedIn) {
+        AlertDialog(
+            onDismissRequest = { /* Don't dismiss */ },
+            title = { Text(stringResource(R.string.login)) },
+            text = {
+                Column {
+                    Text(stringResource(R.string.profile_name))
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = loginName,
+                        onValueChange = { loginName = it },
+                        placeholder = { Text(stringResource(R.string.profile_name_placeholder)) },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (loginName.isNotBlank()) {
+                            viewModel.login(loginName)
+                        }
+                    },
+                    enabled = loginName.isNotBlank()
+                ) {
+                    Text(stringResource(R.string.login))
+                }
+            }
+        )
+    }
 
     if (windowSize == WindowWidthSizeClass.Compact) {
         ProfileCompactScreen(
             userName = userName,
-            isDarkMode = isDarkMode,
+            themeMode = themeMode,
             favCount = favCount,
+            commCount = commCount,
+            allComments = allComments,
+            memberSince = memberSince,
+            isLoggedIn = isLoggedIn,
             onNameChange = { viewModel.saveUserName(it) },
-            onThemeChange = { viewModel.toggleDarkMode(it) },
+            onThemeChange = { viewModel.setThemeMode(it) },
+            onLogout = { viewModel.logout() },
             onAboutClick = { navController.navigate("about") }
         )
     } else {
         ProfileMedExpScreen(
             userName = userName,
-            isDarkMode = isDarkMode,
+            themeMode = themeMode,
             favCount = favCount,
+            commCount = commCount,
+            allComments = allComments,
+            memberSince = memberSince,
+            isLoggedIn = isLoggedIn,
             onNameChange = { viewModel.saveUserName(it) },
-            onThemeChange = { viewModel.toggleDarkMode(it) },
+            onThemeChange = { viewModel.setThemeMode(it) },
+            onLogout = { viewModel.logout() },
             onAboutClick = { navController.navigate("about") }
         )
     }
@@ -62,18 +109,21 @@ fun ProfileScreen(
 @Composable
 fun ProfileCompactScreen(
     userName: String,
-    isDarkMode: Boolean,
+    themeMode: Int,
     favCount: Int,
+    commCount: Int,
+    allComments: List<com.example.fotapp.model.Comment>,
+    memberSince: String,
+    isLoggedIn: Boolean,
     onNameChange: (String) -> Unit,
-    onThemeChange: (Boolean) -> Unit,
+    onThemeChange: (Int) -> Unit,
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier,
     onAboutClick: () -> Unit = {}
 ) {
-    var isLogged by remember { mutableStateOf(true) }
     var email by remember { mutableStateOf("fan@futconnect.com") }
     var location by remember { mutableStateOf("Huelva, España") }
     var favoriteTeam by remember { mutableStateOf("FC Barcelona") }
-    var memberSince by remember { mutableStateOf("2023") }
 
     var isEditingName by remember { mutableStateOf(false) }
     var editNameText by remember { mutableStateOf(userName) }
@@ -116,16 +166,16 @@ fun ProfileCompactScreen(
                     OutlinedTextField(
                         value = editNameText,
                         onValueChange = { editNameText = it },
-                        label = { Text("Nombre") },
+                        label = { Text(stringResource(R.string.profile_name)) },
                         singleLine = true,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                     Row {
-                        TextButton(onClick = { isEditingName = false }) { Text("Cancelar") }
+                        TextButton(onClick = { isEditingName = false }) { Text(stringResource(R.string.cancel)) }
                         Button(onClick = {
                             onNameChange(editNameText)
                             isEditingName = false
-                        }) { Text("Guardar") }
+                        }) { Text(stringResource(R.string.save)) }
                     }
                 } else {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -138,7 +188,7 @@ fun ProfileCompactScreen(
                             editNameText = userName
                             isEditingName = true 
                         }) {
-                            Icon(Icons.Default.Edit, contentDescription = "Editar nombre", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                            Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.edit_name), tint = MaterialTheme.colorScheme.onPrimaryContainer)
                         }
                     }
                 }
@@ -162,23 +212,33 @@ fun ProfileCompactScreen(
             OutlinedCard(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
                     Text(
-                        text = "Configuración",
+                        text = stringResource(R.string.settings),
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Modo Oscuro", style = MaterialTheme.typography.bodyLarge)
-                        Switch(
-                            checked = isDarkMode,
-                            onCheckedChange = { onThemeChange(it) }
+                    
+                    Text(stringResource(R.string.theme_mode), style = MaterialTheme.typography.titleMedium)
+                    
+                    Column {
+                        ThemeOptionRow(
+                            label = stringResource(R.string.theme_system),
+                            selected = themeMode == com.example.fotapp.data.preferences.UserPreferencesRepository.THEME_SYSTEM,
+                            onClick = { onThemeChange(com.example.fotapp.data.preferences.UserPreferencesRepository.THEME_SYSTEM) }
+                        )
+                        ThemeOptionRow(
+                            label = stringResource(R.string.theme_light),
+                            selected = themeMode == com.example.fotapp.data.preferences.UserPreferencesRepository.THEME_LIGHT,
+                            onClick = { onThemeChange(com.example.fotapp.data.preferences.UserPreferencesRepository.THEME_LIGHT) }
+                        )
+                        ThemeOptionRow(
+                            label = stringResource(R.string.theme_dark),
+                            selected = themeMode == com.example.fotapp.data.preferences.UserPreferencesRepository.THEME_DARK,
+                            onClick = { onThemeChange(com.example.fotapp.data.preferences.UserPreferencesRepository.THEME_DARK) }
                         )
                     }
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
                     Text(
                         text = stringResource(R.string.personal_info),
                         style = MaterialTheme.typography.titleLarge,
@@ -188,7 +248,7 @@ fun ProfileCompactScreen(
                     ProfileInfoRow(
                         Icons.Default.Email,
                         stringResource(R.string.email),
-                        if(isLogged) email else "****"
+                        if(isLoggedIn) email else "****"
                     )
                     ProfileInfoRow(
                         Icons.Default.LocationOn,
@@ -222,13 +282,13 @@ fun ProfileCompactScreen(
                 )
                 StatCard(
                     stringResource(R.string.comments_count),
-                    "47",
+                    "$commCount",
                     Icons.AutoMirrored.Filled.Comment,
                     Modifier.weight(1f)
                 )
                 StatCard(
                     stringResource(R.string.days_active),
-                    "128",
+                    "1",
                     Icons.Default.CalendarToday,
                     Modifier.weight(1f)
                 )
@@ -240,9 +300,9 @@ fun ProfileCompactScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 FutButtonComp(
-                    label = if (isLogged) stringResource(R.string.logout) else stringResource(R.string.login),
-                    icon = if (isLogged) Icons.Default.Logout else Icons.Default.Login,
-                    onClick = { isLogged = !isLogged },
+                    label = if (isLoggedIn) stringResource(R.string.logout) else stringResource(R.string.login),
+                    icon = if (isLoggedIn) Icons.Default.Logout else Icons.Default.Login,
+                    onClick = { onLogout() },
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedButton(
@@ -258,8 +318,35 @@ fun ProfileCompactScreen(
                     Text(stringResource(R.string.about))
                 }
             }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Actividad de la Comunidad (REQUISITO 5)
+            com.example.fotapp.ui.components.GlobalCommentFeed(
+                comments = allComments,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+
             Spacer(modifier = Modifier.height(64.dp))
         }
+    }
+}
+
+@Composable
+fun ThemeOptionRow(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(selected = selected, onClick = onClick)
+        Text(text = label, style = MaterialTheme.typography.bodyLarge)
     }
 }
 
@@ -267,18 +354,21 @@ fun ProfileCompactScreen(
 @Composable
 fun ProfileMedExpScreen(
     userName: String,
-    isDarkMode: Boolean,
+    themeMode: Int,
     favCount: Int,
+    commCount: Int,
+    allComments: List<com.example.fotapp.model.Comment>,
+    memberSince: String,
+    isLoggedIn: Boolean,
     onNameChange: (String) -> Unit,
-    onThemeChange: (Boolean) -> Unit,
+    onThemeChange: (Int) -> Unit,
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier,
     onAboutClick: () -> Unit = {}
 ) {
-    var isLogged by remember { mutableStateOf(true) }
     var email by remember { mutableStateOf("fan@futconnect.com") }
     var location by remember { mutableStateOf("Huelva, España") }
     var favoriteTeam by remember { mutableStateOf("FC Barcelona") }
-    var memberSince by remember { mutableStateOf("2023") }
 
     var isEditingName by remember { mutableStateOf(false) }
     var editNameText by remember { mutableStateOf(userName) }
@@ -335,15 +425,15 @@ fun ProfileMedExpScreen(
                                 OutlinedTextField(
                                     value = editNameText,
                                     onValueChange = { editNameText = it },
-                                    label = { Text("Nombre") },
+                                    label = { Text(stringResource(R.string.profile_name)) },
                                     singleLine = true,
                                 )
                                 Row {
-                                    TextButton(onClick = { isEditingName = false }) { Text("Cancelar") }
+                                    TextButton(onClick = { isEditingName = false }) { Text(stringResource(R.string.cancel)) }
                                     Button(onClick = {
                                         onNameChange(editNameText)
                                         isEditingName = false
-                                    }) { Text("Guardar") }
+                                    }) { Text(stringResource(R.string.save)) }
                                 }
                             } else {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -357,7 +447,7 @@ fun ProfileMedExpScreen(
                                         editNameText = userName
                                         isEditingName = true 
                                     }) {
-                                        Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                                        Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.edit_name), tint = MaterialTheme.colorScheme.onPrimaryContainer)
                                     }
                                 }
                             }
@@ -374,9 +464,9 @@ fun ProfileMedExpScreen(
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             FutButtonComp(
-                                label = if (isLogged) stringResource(R.string.logout) else stringResource(R.string.login),
-                                icon = if (isLogged) Icons.Default.Logout else Icons.Default.Login,
-                                onClick = { isLogged = !isLogged },
+                                label = if (isLoggedIn) stringResource(R.string.logout) else stringResource(R.string.login),
+                                icon = if (isLoggedIn) Icons.Default.Logout else Icons.Default.Login,
+                                onClick = { onLogout() },
                                 modifier = Modifier.fillMaxWidth()
                             )
                             OutlinedButton(
@@ -416,22 +506,32 @@ fun ProfileMedExpScreen(
                             modifier = Modifier.fillMaxWidth().padding(24.dp)
                         ) {
                             Text(
-                                text = "Configuración",
+                                text = stringResource(R.string.settings),
                                 style = MaterialTheme.typography.headlineSmall,
                                 color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.padding(bottom = 20.dp)
                             )
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text("Modo Oscuro", style = MaterialTheme.typography.bodyLarge)
-                                Switch(
-                                    checked = isDarkMode,
-                                    onCheckedChange = { onThemeChange(it) }
+                            
+                            Text(stringResource(R.string.theme_mode), style = MaterialTheme.typography.titleLarge)
+                            
+                            Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                                ThemeOptionRowLand(
+                                    label = stringResource(R.string.theme_system),
+                                    selected = themeMode == com.example.fotapp.data.preferences.UserPreferencesRepository.THEME_SYSTEM,
+                                    onClick = { onThemeChange(com.example.fotapp.data.preferences.UserPreferencesRepository.THEME_SYSTEM) }
+                                )
+                                ThemeOptionRowLand(
+                                    label = stringResource(R.string.theme_light),
+                                    selected = themeMode == com.example.fotapp.data.preferences.UserPreferencesRepository.THEME_LIGHT,
+                                    onClick = { onThemeChange(com.example.fotapp.data.preferences.UserPreferencesRepository.THEME_LIGHT) }
+                                )
+                                ThemeOptionRowLand(
+                                    label = stringResource(R.string.theme_dark),
+                                    selected = themeMode == com.example.fotapp.data.preferences.UserPreferencesRepository.THEME_DARK,
+                                    onClick = { onThemeChange(com.example.fotapp.data.preferences.UserPreferencesRepository.THEME_DARK) }
                                 )
                             }
+                            
                             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
                             Text(
@@ -450,7 +550,7 @@ fun ProfileMedExpScreen(
                                 ProfileInfoRowLand(
                                     Icons.Default.Email,
                                     stringResource(R.string.email),
-                                    if(isLogged) email else "****"
+                                    if(isLoggedIn) email else "****"
                                 )
                                 ProfileInfoRowLand(
                                     Icons.Default.LocationOn,
@@ -484,13 +584,13 @@ fun ProfileMedExpScreen(
                         )
                         StatCard(
                             stringResource(R.string.comments_count),
-                            "47",
+                            "$commCount",
                             Icons.AutoMirrored.Filled.Comment,
                             Modifier.weight(1f)
                         )
                         StatCard(
                             stringResource(R.string.days_active),
-                            "28",
+                            "1",
                             Icons.Default.Star,
                             Modifier.weight(1f)
                         )
@@ -502,8 +602,19 @@ fun ProfileMedExpScreen(
                         )
                     }
 
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Actividad de la Comunidad (REQUISITO 5)
+                    com.example.fotapp.ui.components.GlobalCommentFeed(
+                        comments = allComments,
+                        modifier = Modifier.padding(bottom = 32.dp)
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
                     Card(
                         modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant
                         )
@@ -542,6 +653,22 @@ fun ProfileMedExpScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ThemeOptionRowLand(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clickable { onClick() }.padding(vertical = 8.dp)
+    ) {
+        RadioButton(selected = selected, onClick = onClick)
+        Spacer(Modifier.width(4.dp))
+        Text(text = label, style = MaterialTheme.typography.bodyLarge)
     }
 }
 

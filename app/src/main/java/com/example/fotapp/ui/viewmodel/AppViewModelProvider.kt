@@ -20,7 +20,8 @@ object AppViewModelProvider {
         }
         initializer {
             ProfileViewModel(
-                futbolApplication().container.userPreferencesRepository
+                futbolApplication().container.userPreferencesRepository,
+                futbolApplication().container.playerRepository
             )
         }
         initializer {

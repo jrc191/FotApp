@@ -5,7 +5,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [PlayerEntity::class, CommentEntity::class], version = 1, exportSchema = false)
+// ⚠️ Version incrementada a 2 por los nuevos campos en PlayerEntity
+// (appearances, rating, passAccuracy, minutesPlayed, yellowCards, redCards, saves)
+// fallbackToDestructiveMigration() borra y recrea la BD automáticamente.
+@Database(
+    entities = [PlayerEntity::class, CommentEntity::class],
+    version = 2,
+    exportSchema = false
+)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun playerDao(): PlayerDao
 

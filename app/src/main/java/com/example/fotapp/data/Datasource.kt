@@ -157,8 +157,8 @@ object Datasource {
         }
     }
 
-    fun getFlagEmoji(nationality: String): String {
-        return when (nationality.lowercase()) {
+    fun getFlagEmoji(nationality: String?): String {
+        return when (nationality?.lowercase()) {
             "argentina" -> "🇦🇷"
             "portugal" -> "🇵🇹"
             "francia" -> "🇫🇷"

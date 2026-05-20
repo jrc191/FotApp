@@ -2,6 +2,7 @@ package com.example.fotapp.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -28,13 +29,13 @@ fun EditCommentDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Editar comentario") },
+        title = { Text(stringResource(R.string.edit_comment_title)) },
         text = {
             Column {
                 OutlinedTextField(
                     value = text,
                     onValueChange = { text = it },
-                    label = { Text("Comentario") },
+                    label = { Text(stringResource(R.string.comment_label)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.height(16.dp))
@@ -43,7 +44,7 @@ fun EditCommentDialog(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Rating: ", style = MaterialTheme.typography.titleMedium)
+                    Text("${stringResource(R.string.rating_label)}: ", style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.width(8.dp))
                     StarRating(
                         rating = rating,
@@ -55,7 +56,7 @@ fun EditCommentDialog(
         },
         confirmButton = {
             TextButton(onClick = { onConfirm(text, rating) }) {
-                Text("Guardar")
+                Text(stringResource(R.string.save))
             }
         },
         dismissButton = {
@@ -92,19 +93,19 @@ fun CommentItem(
     if (showDeleteConfirm) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirm = false },
-            title = { Text("Borrar comentario") },
-            text = { Text("¿Estás seguro de que quieres borrar este comentario?") },
+            title = { Text(stringResource(R.string.delete_comment_title)) },
+            text = { Text(stringResource(R.string.delete_comment_confirm)) },
             confirmButton = {
                 TextButton(onClick = {
                     onDelete(comment)
                     showDeleteConfirm = false
                 }) {
-                    Text("Borrar", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.delete_action), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirm = false }) {
-                    Text("Cancelar")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -180,14 +181,14 @@ fun CommentItem(
                 if (comment.userName == currentUserName) {
                     Box {
                         IconButton(onClick = { showMenu = true }) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "Opciones")
+                            Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.options_desc))
                         }
                         DropdownMenu(
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Editar") },
+                                text = { Text(stringResource(R.string.edit_action)) },
                                 onClick = {
                                     showMenu = false
                                     showEditDialog = true
@@ -195,7 +196,7 @@ fun CommentItem(
                                 leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) }
                             )
                             DropdownMenuItem(
-                                text = { Text("Borrar") },
+                                text = { Text(stringResource(R.string.delete_action)) },
                                 onClick = {
                                     showMenu = false
                                     showDeleteConfirm = true
@@ -217,6 +218,94 @@ fun CommentItem(
                 style = MaterialTheme.typography.bodyMedium,
                 lineHeight = MaterialTheme.typography.bodyMedium.lineHeight.times(1.2),
                 color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
+}
+
+@Composable
+fun GlobalCommentFeed(
+    comments: List<Comment>,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(R.string.community_activity),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            text = stringResource(R.string.community_activity_desc),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (comments.isEmpty()) {
+            Text(
+                text = stringResource(R.string.no_comments),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+        } else {
+            comments.take(10).forEach { comment ->
+                GlobalCommentItem(comment = comment)
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun GlobalCommentItem(comment: Comment) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = comment.userName.take(1).uppercase(),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = comment.userName,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = comment.date,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                StarRating(rating = comment.rating, starSize = 14)
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = comment.text,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
             )
         }
     }

@@ -26,6 +26,7 @@ import com.example.fotapp.data.Datasource.getFlagEmoji
 import com.example.fotapp.ui.components.CommentItem
 import com.example.fotapp.ui.components.StarRating
 import com.example.fotapp.ui.components.StatCard
+import com.example.fotapp.ui.components.getPlayerDescription
 import com.example.fotapp.ui.viewmodel.AppViewModelProvider
 import com.example.fotapp.ui.viewmodel.PlayerDetailViewModel
 
@@ -53,13 +54,13 @@ fun PlayerDetailFavScreen(
     if (showCommentDialog) {
         AlertDialog(
             onDismissRequest = { showCommentDialog = false },
-            title = { Text("Añadir comentario") },
+            title = { Text(stringResource(R.string.add_new_comment)) },
             text = {
                 Column {
                     OutlinedTextField(
                         value = commentText,
                         onValueChange = { commentText = it },
-                        label = { Text("Comentario") },
+                        label = { Text(stringResource(R.string.comment_label)) },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(16.dp))
@@ -68,7 +69,7 @@ fun PlayerDetailFavScreen(
                         horizontalArrangement = Arrangement.Center,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Rating: ", style = MaterialTheme.typography.titleMedium)
+                        Text("${stringResource(R.string.rating_label)}: ", style = MaterialTheme.typography.titleMedium)
                         Spacer(Modifier.width(8.dp))
                         StarRating(
                             rating = rating,
@@ -87,7 +88,7 @@ fun PlayerDetailFavScreen(
                     commentText = ""
                     rating = 5
                 }) {
-                    Text("Añadir")
+                    Text(stringResource(R.string.add_action))
                 }
             },
             dismissButton = {
@@ -133,11 +134,11 @@ fun PlayerDetailFavScreen(
                 icon = {
                     Icon(
                         imageVector = Icons.Default.AddComment,
-                        contentDescription = "Añadir comentario"
+                        contentDescription = stringResource(R.string.add_comment)
                     )
                 },
                 text = {
-                    Text("Comentar")
+                    Text(stringResource(R.string.comments))
                 },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -194,12 +195,12 @@ fun PlayerDetailFavScreen(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
                         Text(
-                            "${it.position} • ${it.team}",
+                            "${it.position ?: "N/A"} • ${it.team}",
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            "${getFlagEmoji(it.nationality)} ${it.nationality} • ${stringResource(R.string.age_stat, it.age)}",
+                            "${getFlagEmoji(it.nationality)} ${it.nationality ?: "N/A"} • ${stringResource(R.string.age_stat, it.age)}",
                             style = MaterialTheme.typography.bodyLarge)
                     }
 
@@ -265,7 +266,7 @@ fun PlayerDetailFavScreen(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            it.description,
+                            getPlayerDescription(it),
                             style = MaterialTheme.typography.bodyLarge,
                             textAlign = TextAlign.Justify
                         )

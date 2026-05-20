@@ -20,6 +20,37 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.fotapp.R
+import com.example.fotapp.model.Player
+
+@Composable
+fun getPlayerDescription(player: Player): String {
+    val position = player.position ?: ""
+    val isGK = position.contains("Portero", ignoreCase = true) || 
+               position.contains("Goalkeeper", ignoreCase = true)
+    
+    return if (player.description.isNotEmpty()) {
+        player.description
+    } else if (isGK) {
+        stringResource(
+            R.string.description_gk,
+            player.team,
+            player.saves,
+            player.rating,
+            player.passAccuracy
+        )
+    } else if (player.team != "N/A") {
+        stringResource(
+            R.string.description_player,
+            player.team,
+            player.goals,
+            player.assists,
+            player.rating,
+            player.passAccuracy
+        )
+    } else {
+        stringResource(R.string.description_fallback, player.name)
+    }
+}
 
 @Composable
 fun FutHeaderComp(title: String) {
@@ -149,7 +180,7 @@ fun StarRating(
         for (i in 1..maxRating) {
             Icon(
                 imageVector = if (i <= rating) Icons.Filled.Star else Icons.Filled.StarBorder,
-                contentDescription = stringResource(R.string.rating_hint, i),
+                contentDescription = stringResource(R.string.rating_star_desc, i),
                 tint = if (i <= rating) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.outline,
                 modifier = Modifier
                     .size(starSize.dp)

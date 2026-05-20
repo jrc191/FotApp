@@ -32,7 +32,7 @@ fun AboutScreen(
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_futconnect),
-            contentDescription = "Logo",
+            contentDescription = stringResource(R.string.app_name),
             modifier = Modifier.size(120.dp)
         )
 
@@ -44,9 +44,9 @@ fun AboutScreen(
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Red social para amantes del fútbol", fontSize = 18.sp)
+        Text(stringResource(R.string.about_tagline), fontSize = 18.sp)
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Versión 2.0 - Navegación Completa", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.about_version), color = MaterialTheme.colorScheme.onSurfaceVariant)
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -57,7 +57,7 @@ fun AboutScreen(
         ) {
             Icon(Icons.Default.Email, null)
             Spacer(Modifier.width(8.dp))
-            Text("Contactar Soporte")
+            Text(stringResource(R.string.contact_support))
         }
 
         Button(
@@ -67,7 +67,7 @@ fun AboutScreen(
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text("Volver")
+            Text(stringResource(R.string.back))
         }
     }
 }
